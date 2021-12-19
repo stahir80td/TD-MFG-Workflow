@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net40</TargetFramework>
+    <StartupObject>Setup1.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MFG-Algos\7-zip.chm" />
+    <None Remove="MFG-Algos\7-zip.dll" />
+    <None Remove="MFG-Algos\7-zip32.dll" />
+    <None Remove="MFG-Algos\7z.dll" />
+    <None Remove="MFG-Algos\7z.exe" />
+    <None Remove="MFG-Algos\7z.sfx" />
+    <None Remove="MFG-Algos\7zCon.sfx" />
+    <None Remove="MFG-Algos\7zFM.exe" />
+    <None Remove="MFG-Algos\7zG.exe" />
+    <None Remove="MFG-Algos\config.xml" />
+    <None Remove="MFG-Algos\descript.ion" />
+    <None Remove="MFG-Algos\History.txt" />
+    <None Remove="MFG-Algos\License.txt" />
+    <None Remove="MFG-Algos\MFGAlgos.psm1" />
+    <None Remove="MFG-Algos\readme.txt" />
+    <None Remove="MFG-Algos\Uninstall.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MFG-Algos\7-zip.chm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7-zip.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7-zip32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7z.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7z.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7z.sfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7zCon.sfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7zFM.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\7zG.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\descript.ion">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\MFGAlgos.psm1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\Uninstall.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
