@@ -438,7 +438,7 @@ Explanation: To override Average Trades Per Year and Average Trades
 
 SQ-List-Symbols
 
-Lists all the symbols and its metadata from your SQ. 
+Lists all the symbols and its metadata from your SQ.
 
 --- Usage Example 19 ---
 
@@ -456,7 +456,7 @@ Gets the backtest start date from SQ to generate the workflow
 
 Get-MFG-Configuration
 
-Displays your MFG configuration settings. 
+Displays your MFG configuration settings.
 
 --- Usage Example 22 ---
 
@@ -473,6 +473,34 @@ If you run it without passing any parameters, it will restore all settings to de
 Mine-Common -InstrumentToMine TSLA -GetBacktestTimeframeFromTradeStationFile
 
 Gets the starting date of backtest from the .csv file for TSLA. You need to set your folder path where you save .csv files to make this work. See this command Set-MFG-Configuration above
+
+--- Usage Example 24 ---
+
+Clear-Databanks (to speed up SQ)
+
+Removes everything except Recency and Final results stored by SQ under C:\StrategyQuantX\user\projects. Note, if you plan to use this command, make sure to backup your data before running this command. The template I am using, that comes with the powershell commands saves everything (results) under C:\Algos\SQ\MFG-Results Therefore, it is perfectly fine for me to delete SQ folders. I only keep Final and Recency so UI can give me a clue if project has been mined already or not. To get the command use mine -upgrade Backup data before using this command
+
+--- Usage Example 25 ---
+
+TD-MFG-Test-Workflow -Symbol_1 AAPL -Symbol_2 TSLA -Symbol_3 SHOP -Symbol_4 ARKK -Symbol_5 IHI -TestDurationInMinutes 5 -BacktestTimeframe H1
+
+Generates workflow w/ AAPL, TSLA, SHOP, ARKK and IHI. Test will run for TestDurationInMinutes
+
+--- Usage Example 26 ---
+
+Daily-Update
+
+Run this as Administrator in Powershell ISE to setup a windows scheduled task that will download latest powershell modules daily
+
+--- Usage Example 27 ---
+
+SQ-Import-Symbols
+
+Imports symbols and data from Trade Station directory. If no parameter is specified will load all symbols and its data to SQ.
+
+If you want to limit it to specific symbol run it as SQ-Import-Symbols -Symbol AAPL -Instrument "Standard stock"
+
+To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath "You TS Data folder where you keep .csv"
 
 "@
 
