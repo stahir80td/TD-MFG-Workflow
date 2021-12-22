@@ -1,11 +1,67 @@
-﻿function Upgrade-Module()
+﻿function Get-MFG-Configuration()
+{
+    $configPath = "$($PSScriptRoot)\MFGConfig.json"
+    
+    if(-NOT (Test-Path $configPath))
+    {
+        Write-Error "MFG config not found at this path: $configPath"
+    }
+    
+    Get-Content "$configPath"
+}
+
+function Daily-Update()
+{
+    $scheduleObject = New-Object -ComObject schedule.service
+    $scheduleObject.connect()
+    $rootFolder = $scheduleObject.GetFolder("\")
+    try{$rootFolder.CreateFolder("MFG") } catch{}
+
+    ipmo ScheduledTasks
+
+    $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-WindowStyle Hidden Mine -Upgrade"
+
+    $time = Get-Random -Minimum 1 -Maximum 11
+
+    $trigger = New-ScheduledTaskTrigger -Daily -At "$($time)pm"
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UpdateMFGModules" -Description "Updated MSG Powershell Modules" -User "System" -Verbose -TaskPath '\MFG\' 
+}
+
+function Load-MFG-Config()
+{
+    Get-MFG-Configuration | Out-String | ConvertFrom-Json
+}
+
+function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
+    $TradeStationDataPath = "C:\Users\17703\Dropbox\MFG-DropBox\TradeStation\Data", 
+    $WorkflowResultsPath = "C:\Algos\SQ\MFG-Results", 
+    $UpgradeURL = "http://151.106.59.178/MFG-Algos"
+    )
+{
+    $json = Get-MFG-Configuration | Out-String | ConvertFrom-Json
+
+    $json.MFGConfig.SQPath = "$SQPath"
+    $json.MFGConfig.TSDataPath = "$TradeStationDataPath"
+    $json.MFGConfig.WorkflowResultsPath = "$WorkflowResultsPath"
+    $json.MFGConfig.UpgradeURL = "$UpgradeURL"
+    
+    $json | ConvertTo-Json -depth 32| set-content "$($PSScriptRoot)\MFGConfig.json"
+
+    Get-MFG-Configuration
+}
+
+function Upgrade-Module([Parameter(Mandatory=$false)]
+                    [Switch]$UpdateUserSettings
+    )
 {
     Write-Host "`nDownloading latest package" -ForegroundColor Cyan
 
     Add-Type -AssemblyName System.Web
     Add-Type -AssemblyName System.Web.Extensions
 
-    $url       = 'http://151.106.59.178/MFG-Algos'
+    $config = Load-MFG-Config
+    $url = "$($config.MFGConfig.UpgradeURL)"
+    
     $destPath  = "$PSScriptRoot"
 
     md $destPath -Force
@@ -16,17 +72,29 @@
         
         Write-Host "Downloading file '$_'"
         $filePath = Join-Path -Path $destPath -ChildPath $_
-        $fileUrl  = '{0}/{1}' -f $url.TrimEnd('/'), $_
-        if(-NOT ($fileUrl -like "*web.config*")){
-            $ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri $fileUrl -OutFile $filePath
+
+        if($_ -eq "MFGConfig.json" -and (Test-Path "$filePath") -and $UpdateUserSettings -eq $false)
+        {
+            Write-Host "$filePath with user settings will not be upgraded. If you want to force upgrade this file with your user settings, use Mine -Upgrade -UpdateUserSettings" -ForegroundColor Cyan
+        }
+        else
+        {
+            $fileUrl  = '{0}/{1}' -f $url.TrimEnd('/'), $_
+            if(-NOT ($fileUrl -like "*web.config*")){
+                $ProgressPreference = 'SilentlyContinue'
+                Invoke-WebRequest -Uri $fileUrl -OutFile $filePath
+            }
         }
     }
 
 }
 
-function Restore-Databanks($Symbol="All", $workflowResultsFolder="C:\Algos\SQ\MFG-Results", $SQProjectsFolder="C:\StrategyQuantX\user\projects")
+function Restore-Databanks($Symbol="All")
 {
+
+    $config = Load-MFG-Config
+    $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
+    $SQProjectsFolder = "$($config.MFGConfig.SQPath)\user\projects"
 
     $stockDirs = get-childitem "$workflowResultsFolder" -Directory
 
@@ -83,6 +151,89 @@ function Restore-Databanks($Symbol="All", $workflowResultsFolder="C:\Algos\SQ\MF
 
 }
 
+function SQ-List-Symbols()
+{
+    $config = Load-MFG-Config
+    $SQPath = "$($config.MFGConfig.SQPath)"
+
+    if(-NOT (Test-Path $SQPath))
+    {
+        Write-Error "Your Strategy Quant path $SQPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
+    }
+    
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-symbol action=list"
+
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$anotherInstance"
+    }
+    $response = $response.Where({ $_ -like "*Symbol,Instrument*" },'SkipUntil')
+    $response = $response.Where({-Not($_ -like "*Data Listed*") })
+    $response = $response.Where({-Not($_ -like "*----*") })
+    $response = $response.Where({-Not($_ -like "*Exit app*") })
+    $response = $response.Where({-Not($_ -like "*Symbol,Instrument*") })
+    
+    return $response
+    
+}
+
+function SQ-Generate-Workflow-Command($Symbol = "All")
+{
+    $found = $false
+    $symbols = SQ-List-Symbols
+
+    $commands = @("Command for Symbol")
+    foreach($instrument in $symbols)
+    {
+        $symbolSplit = $instrument.split(",")
+        if($Symbol -eq "All" -or $Symbol -eq "$($symbolSplit[0].Split("_")[0])")
+        {
+            $found = $true
+            $command =  "Mine-Common -InstrumentToMine $($symbolSplit[0].Split("_")[0]) -BacktestTimeframe $($symbolSplit[6])"
+            $commands += $command
+        }
+    }
+    
+    if($found -eq $true)
+    {
+        return $commands
+    }
+    else
+    {
+        return @("Command for Symbol","NotFound")
+    }
+}
+
+function TS-Get-Symbol-StartingDate($FullDurationStartDate, $Symbol)
+{
+    $config = Load-MFG-Config
+    $TSDataPath = "$($config.MFGConfig.TSDataPath)"
+
+    if(-NOT (Test-Path $TSDataPath))
+    {
+        Write-Error "Your Trade Station Data path $TSDataPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
+    }
+    
+    $files = Get-ChildItem "$TSDataPath\*.csv"
+
+    foreach($file in $files)
+    {
+        if("$($file.Name.Split("_")[0])" -eq "$Symbol")
+        {
+            $startingDate = "$((gc $file)[1].Split(",")[0])"
+            
+            $bits = $startingDate.Split("/")
+            return "$($bits[2]).$($bits[0]).$($bits[1])"
+        }
+    }
+    
+    return $FullDurationStartDate
+    
+}
 
 function Print-HelpContent()
 {
@@ -116,31 +267,27 @@ Explanation: You want to mine NFLX with default settings. This will use defaults
 
 --- Usage Example 4 ---
 
-TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500 -InSampleStartDate "2014.5.1" -RecencyStartDate "2019.1.1" -RecencyEndDate "2021.12.5" -OutOfSampleStartDate "2018.1.1"
+TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500 -FullDurationStartDate "2014.05.01" -FullDurationEndDate "2021.11.30"
 
 Explanation:
 
 You would like to mine MC with V and JPM as correlated symbols. 25k Initial Captial and max drawdown of 5k.
 
-The "In Sample" starts from 2014.5.1, the "In Sample" ends at 2019.1.1
-The "Out of Sample" starts from 2018.1.1 and it ends at 2019.1.1
-The "Recency" starts from 2019.1.1 and ends at 2021.21.5
-The Full time span would be 2014.5.1. and 2121.12.5
+Date Format is yyyy.MM.dd (4 digits for year, 2 digits for month and 2 digits for day)
+
+40% IS (step 2 in the workflow; Build phase)
+30% OOS (step 2 in the workflow; Build phase)
+30% OOS (step 3 in the workflow; Recency)
 
 Note: If you are providing dates as input parameters, make sure they fall in the date range imported for the instrument (from CSV).
 
 --- Usage Example 5 ---
 
-TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500 -InSampleStartDate "2014.5.1" -RecencyStartDate "2019.1.1" -RecencyEndDate "2021.12.5" -OutOfSampleStartDate "2018.1.1" -BacktestTimeframe M30 -AlternateTimeframe H1
+TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500 -BacktestTimeframe M30 -AlternateTimeframe H1
 
 Explanation:
 
 You would like to mine MC with V and JPM as correlated symbols. 25k Initial Captial and max drawdown of 5k.
-
-The "In Sample" starts from 2014.5.1, the "In Sample" ends at 2019.1.1
-The "Out of Sample" starts from 2018.1.1 and it ends at 2019.1.1
-The "Recency" starts from 2019.1.1 and ends at 2021.21.5
-The Full time span would be 2014.5.1. and 2121.12.5
 
 Backtest Timeframe will be M30
 Alternate Timeframe will be H1
@@ -181,6 +328,82 @@ mine -Upgrade
 
 Upgrades powershell module to latest
 
+--- Usage Example 12 ---
+
+Restore-Databanks -Symbol AAPL
+
+Explanation: If for some unknown reasons SQ deletes the databank results, you can restore them to original location if you are using standard workflow template that stores results after each task under C:\Algos\SQ\MFG-Results. If you don't specify any parameter, it will restore results for all symbols under C:\Algos\SQ\MFG-Results.
+
+--- Usage Example 13 ---
+
+"SQ", "RBLX", "NVDA", "SOFI" | mine -Correlated_1 FB -Correlated_2 AAPL -BacktestTimeframe D1 -AlternateTimeframe H4
+
+Explanation: You would like to create a workflow for SQ, RBLX, NVDA and SOFI. All of them will use FB and APPL for correlated symbols. BacktestTimeframe will be D1 and AlternateTimeframe will be H4
+
+--- Usage Example 14 ---
+
+Mine-Common -InstrumentToMine SHOP -FullDurationStartDate 2015.05.21
+
+Explanation: Generates .cfx file for M30, D1 and H1
+
+--- Usage Example 15 ---
+
+Mine-D1 -InstrumentToMine TSLA –FullDurationStartDate 2010.06.29
+
+Explanation: Generates .cfx file w/ D1 as backtest timeframe and H4 alternate timeframe
+
+--- Usage Example 16 ---
+
+Mine-M30 -InstrumentToMine TSLA –FullDurationStartDate 2010.06.29
+
+Explanation: Generates .cfx file w/ M30 as backtest timeframe and H1 alternate timeframe
+
+--- Usage Example 17 ---
+
+Mine -InstrumentToMine TSLA –FullDurationStartDate 2010.06.29 -AverageTradesPerYear 100 AverageTrade 100
+
+Explanation: To override Average Trades Per Year and Average Trades
+
+--- Usage Example 18 ---
+
+SQ-List-Symbols
+
+Lists all the symbols and its metadata from your SQ. 
+
+--- Usage Example 19 ---
+
+SQ-Generate-Workflow-Command -Symbol TSLA
+
+Generates workflow command based on backtest timeframe in SQ. If you don't specify -Symbol, it will pull all symbols from SQ
+
+--- Usage Example 20 ---
+
+Mine -InstrumentToMine TSLA -GetBacktestTimeframeFromSQ
+
+Gets the backtest start date from SQ to generate the workflow
+
+--- Usage Example 21 ---
+
+Get-MFG-Configuration
+
+Displays your MFG configuration settings. 
+
+--- Usage Example 22 ---
+
+Set-MFG-Configuration
+
+You can set your MFG configuration with this command. It has parameters for -SQPath -TradeStationDataPath -WorkflowResultsPath and -UpgradeURL.
+
+You might want to set your Trade Station Path where you save .csv files, like this Set-MFG-Configuration -TradeStationDataPath "C:\TradeStation\Data"
+
+If you run it without passing any parameters, it will restore all settings to default.
+
+--- Usage Example 23 ---
+
+Mine-Common -InstrumentToMine TSLA -GetBacktestTimeframeFromTradeStationFile
+
+Gets the starting date of backtest from the .csv file for TSLA. You need to set your folder path where you save .csv files to make this work. See this command Set-MFG-Configuration above
+
 "@
 
     Write-Host $HelpContent -ForegroundColor Cyan
@@ -188,10 +411,29 @@ Upgrades powershell module to latest
 
 }
 
+function Clear-Databanks()
+{
+    $confirmation = Read-Host "Are you Sure You Want To Proceed? This will remove most of the SQ results. You should backup your results before using this command. Press Y to delete databanks"
+    if ($confirmation -eq 'y') {
 
-function Algo-CreateWorkspace($stock, $rootPath = "C:\Algos\SQ\MFG-Results", $BacktestTimeframe = "H1")
+        $config = Load-MFG-Config
+        $SQProjectsFolder = "$($config.MFGConfig.SQPath)\user\projects"
+
+        Get-ChildItem -Path "$SQProjectsFolder" -Recurse -exclude Results -Include *.sqx |
+        Select -ExpandProperty FullName |
+        Where {$_ -notlike '*Final*' -and $_ -notlike '*Recency*'} |
+        Remove-Item -force
+
+    }
+
+}
+
+function Algo-CreateWorkspace($stock, $BacktestTimeframe = "H1")
 {
     Write-Host "Creating workspace..." -ForegroundColor Green
+
+    $config = Load-MFG-Config
+    $rootPath = "$($config.MFGConfig.WorkflowResultsPath)"
     
     $rootPath = Join-Path $rootPath $stock
 
@@ -243,6 +485,176 @@ function Get-SymbolTimeframe($timeframe,
     return $computedTimeFrame
 }
 
+function TD-MFG-InitializeWorkflow-CommonTimeframes
+(
+    [Parameter(ValueFromPipeline = $true)]
+    [string[]]
+    $InstrumentToMine = "AAPL", 
+    $Correlated_1 = "FB", 
+    $Correlated_2 = "AAPL", 
+    $InitialCapital = "25000", 
+    $Drawdown = "5000", 
+    $MaxStrategies = "1500", 
+    $FullDurationStartDate="2000.01.01", 
+    $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $CorrelatedSymbolTimeframe = "M30",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $UnCorrelatedSymbolTimeframe = "M30",
+    $Session = "No Session",
+    [ValidateSet("SQ", "MFG")]
+    [string]
+    $SymbolTimeframeConvention = "MFG",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Help,
+    $UnCorrelatedSymbol = "GLD",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Upgrade,
+    $AverageTradesPerYear = "15",
+    $AverageTrade = "95",
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromSQ,
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    )
+
+{
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H1 -AlternateTimeframe M30 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
+}
+
+function TD-MFG-InitializeWorkflow-M30
+(
+    [Parameter(ValueFromPipeline = $true)]
+    [string[]]
+    $InstrumentToMine = "AAPL", 
+    $Correlated_1 = "FB", 
+    $Correlated_2 = "AAPL", 
+    $InitialCapital = "25000", 
+    $Drawdown = "5000", 
+    $MaxStrategies = "1500", 
+    $FullDurationStartDate="2000.01.01", 
+    $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $CorrelatedSymbolTimeframe = "M30",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $UnCorrelatedSymbolTimeframe = "M30",
+    $Session = "No Session",
+    [ValidateSet("SQ", "MFG")]
+    [string]
+    $SymbolTimeframeConvention = "MFG",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Help,
+    $UnCorrelatedSymbol = "GLD",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Upgrade,
+    $AverageTradesPerYear = "15",
+    $AverageTrade = "95",
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromSQ,
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    )
+
+{
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
+    
+
+}
+
+function TD-MFG-InitializeWorkflow-D1
+(
+    [Parameter(ValueFromPipeline = $true)]
+    [string[]]
+    $InstrumentToMine = "AAPL", 
+    $Correlated_1 = "FB", 
+    $Correlated_2 = "AAPL", 
+    $InitialCapital = "25000", 
+    $Drawdown = "5000", 
+    $MaxStrategies = "1500", 
+    $FullDurationStartDate="2000.01.01", 
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $CorrelatedSymbolTimeframe = "M30",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $UnCorrelatedSymbolTimeframe = "M30",
+    $Session = "No Session",
+    [ValidateSet("SQ", "MFG")]
+    [string]
+    $SymbolTimeframeConvention = "MFG",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Help,
+    $UnCorrelatedSymbol = "GLD",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Upgrade,
+    $AverageTradesPerYear = "15",
+    $AverageTrade = "95",
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromSQ,
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    )
+
+{
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
+}
+
+function Get-BackTestTimeframeFromSQ($Symbol, $FullDurationStartDate)
+{
+    $commands = SQ-Generate-Workflow-Command -Symbol $Symbol
+
+    if($commands[1] -eq "NotFound")
+    {
+        
+        Write-Host "$Symbol not found in Strategy Quant, will use default for FullDurationStartDate $FullDurationStartDate" -ForegroundColor Red
+        return $FullDurationStartDate
+    }
+    else
+    {
+        return $commands[1].Split(" ")[4]
+    }
+}
+
+
 function TD-MFG-InitializeWorkflow(
     [Parameter(ValueFromPipeline = $true)]
     [string[]]
@@ -252,7 +664,6 @@ function TD-MFG-InitializeWorkflow(
     $InitialCapital = "25000", 
     $Drawdown = "5000", 
     $MaxStrategies = "1500", 
-    $SaveFileToPath = "C:\Algos\SQ\MFG-Results", 
     $FullDurationStartDate="2000.01.01", 
     $FullDurationEndDate= $(Get-Date),
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
@@ -277,7 +688,13 @@ function TD-MFG-InitializeWorkflow(
     [Parameter(Mandatory=$false)]
     [Switch]$Upgrade,
     $AverageTradesPerYear = "15",
-    $AverageTrade = "95"
+    $AverageTrade = "95",
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromSQ,
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromTradeStationFile,
+    [Parameter(Mandatory=$false)]
+    [Switch]$UpdateUserSettings
     )
 {
     BEGIN {}
@@ -295,10 +712,22 @@ function TD-MFG-InitializeWorkflow(
 
         if($Upgrade -eq $true)
         {
-            Upgrade-Module
+            Upgrade-Module -UpdateUserSettings:$UpdateUserSettings
             Write-Host "`nPackage has been upgraded. Run following command" -ForegroundColor Green
             Write-Host "`nImport-Module '$($PSScriptRoot)\MFGAlgos.psm1' -force -DisableNameChecking" -ForegroundColor Cyan
             return
+        }
+
+        if($GetBacktestTimeframeFromSQ -eq $true)
+        {
+            Write-Host "Attmpting to get Backtest Start Date from SQ...." -ForegroundColor Green
+            $FullDurationStartDate =  Get-BackTestTimeframeFromSQ -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate
+        }
+
+        if($GetBacktestTimeframeFromTradeStationFile -eq $true)
+        {
+            Write-Host "Attmpting to get Backtest Start Date from Trade Station File...." -ForegroundColor Green
+            $FullDurationStartDate =  TS-Get-Symbol-StartingDate -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate
         }
         
         try{
@@ -346,9 +775,12 @@ function TD-MFG-InitializeWorkflow(
     
             $config = "$PSScriptRoot\config.xml"
 
+            $MFGconfig = Load-MFG-Config
+            $SaveFileToPath = "$($MFGconfig.MFGConfig.WorkflowResultsPath)"
+            
             $rootFolder = "$SaveFileToPath\$instrument"
 
-            Algo-CreateWorkspace -stock $instrument -rootPath $SaveFileToPath -BacktestTimeframe "$BacktestTimeframe"
+            Algo-CreateWorkspace -stock $instrument -BacktestTimeframe "$BacktestTimeframe"
 
             copy-item -Path $config -Destination $rootFolder
 
@@ -399,6 +831,137 @@ function TD-MFG-InitializeWorkflow(
     END {}
 }
 
-New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
+function TD-MFG-Test-Workflow(
+    $Symbol_1 = "AAPL", 
+    $Symbol_2 = "SHOP", 
+    $Symbol_3 = "AMZN", 
+    $Symbol_4 = "ARKK", 
+    $Symbol_5 = "TSLA", 
+    $TestDurationInMinutes = "5", 
+    $InitialCapital = "25000", 
+    $Drawdown = "5000", 
+    $MaxStrategies = "1500", 
+    $FullDurationStartDate="2000.01.01", 
+    $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $BacktestTimeframe = "H1",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    $Session = "No Session",
+    [ValidateSet("SQ", "MFG")]
+    [string]
+    $SymbolTimeframeConvention = "MFG",
+    $AverageTradesPerYear = "15",
+    $AverageTrade = "95"
+    )
+{
+    BEGIN {}
+	PROCESS
+	{
+        $InSampleStartDate = ""
+        $RecencyStartDate  = ""
+        $RecencyEndDate = ""
+        $OutOfSampleStartDate = ""
 
-Export-ModuleMember -Function TD-MFG-InitializeWorkflow,Restore-Databanks -Alias *
+        try{
+            if($FullDurationEndDate.GetType().Name -eq "String")
+            {
+                $FullDurationEndDate = [datetime]::parseexact($FullDurationEndDate, "yyyy.MM.dd", $null)
+            }
+        
+            $ts = New-TimeSpan -Start $FullDurationStartDate -End $FullDurationEndDate
+            $backtestDuration = [math]::Round(.7 * $ts.Days)
+            $InSampleDuration = [math]::Round(.4 * $ts.Days) 
+            
+            $startingDateFormat = [datetime]::parseexact($FullDurationStartDate, "yyyy.MM.dd", $null)
+            $backTestEnds = $startingDateFormat.AddDays($backtestDuration)
+            $OutOfSampleStartDate = $startingDateFormat.AddDays($InSampleDuration)
+
+            "Backtest start date: $($startingDateFormat.ToString("yyyy.MM.dd"))"
+            "Backtest end date: $($backTestEnds.ToString("yyyy.MM.dd"))"
+            "Out Of Sample start date: $($OutOfSampleStartDate.ToString("yyyy.MM.dd"))"
+            "Recency start date: $($backTestEnds.ToString("yyyy.MM.dd"))"
+            "Recency end date: $($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+            "Full duration start date: $($startingDateFormat.ToString("yyyy.MM.dd"))"
+            "Full duration end date: $($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+
+            $InSampleStartDate = "$($startingDateFormat.ToString("yyyy.MM.dd"))"
+            $RecencyStartDate  = "$($backTestEnds.ToString("yyyy.MM.dd"))"
+            $RecencyEndDate = "$($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+            $OutOfSampleStartDate = "$($OutOfSampleStartDate.ToString("yyyy.MM.dd"))"
+
+        }
+        catch
+        {
+            Write-Host "Please enter date in correct format yyyy.MM.dd Example: 2021.04.21" -ForegroundColor Red
+            Write-Host "$_" -ForegroundColor DarkYellow
+            return
+        }
+
+        $BTF = Get-SymbolTimeframe -timeframe $BacktestTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+    
+        $config = "$PSScriptRoot\quickTest.xml"
+
+        $MFGconfig = Load-MFG-Config
+        $SaveFileToPath = "$($MFGconfig.MFGConfig.WorkflowResultsPath)"
+            
+        $rootFolder = "$SaveFileToPath\QuickTest"
+
+        Algo-CreateWorkspace -stock "QuickTest" -BacktestTimeframe "$BacktestTimeframe"
+
+        copy-item -Path $config -Destination "$rootFolder\config.xml"
+
+        $newConfigFilePath = "$rootFolder\config.xml"
+
+        Write-Host "Replacing placeholders..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[UL_Stock_1]', "$Symbol_1").replace('[UL_Stock_2]', "$Symbol_2").replace('[UL_Stock_3]', "$Symbol_3").replace('[UL_Stock_4]', "$Symbol_4").replace('[UL_Stock_5]', "$Symbol_5").replace('[Drawdown]', "$Drawdown").replace('[InitialCapital]', "$InitialCapital").replace('[MaxStrategies]', "$MaxStrategies") | Set-Content $newConfigFilePath -Force
+               
+        Write-Host "Updating IS, OS and Recency dates..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[IS_StartDate]', "$InSampleStartDate").replace('[Recency_Start_Date]',"$RecencyStartDate").replace('[Recency_End_Date]',"$RecencyEndDate").replace('[OS_Start_Date]',"$OutOfSampleStartDate") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Replacing timeframes..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[ATF]', "$ATF").replace('[UTF]', "$UTF").replace('[CTF]', "$CTF").replace('[TF]',"$BTF").replace('[BacktestTimeframe]',"$BacktestTimeframe").replace('[AlternateTimeframe]',"$AlternateTimeframe") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Replacing session..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[NoSession]', "$Session") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Replacing average trades..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[AvgTradesPerYear]', "$AverageTradesPerYear").replace('[AvgTrade]', "$AverageTrade") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Replacing test duration..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[Test_Duration]', "$TestDurationInMinutes") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Packaging workflow..." -ForegroundColor Green
+
+        $7zipPath = "$PSScriptRoot\7z.exe"
+
+        if (-not (Test-Path -Path $7zipPath -PathType Leaf)) {
+            throw "7 zip file $($7zipPath) not found. Please install 7-zip at this path: $PSScriptRoot from this website and then retry: https://www.7-zip.org/download.html"
+        }
+
+        $Target = "$rootFolder\MFG-QuickTest-$BacktestTimeframe.cfx"
+
+        Set-Alias 7zip "$7zipPath"
+
+        7zip a -tzip "$($Target)" "$newConfigFilePath"
+
+        Write-Host "Wooho! workflow file has been created. Check the workflow file at path: $Target" -ForegroundColor Green
+        
+    }
+
+    END {}
+}
+
+New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
+New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
+New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
+
+New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
+
+Export-ModuleMember -Function Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
