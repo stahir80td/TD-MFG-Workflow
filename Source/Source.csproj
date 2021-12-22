@@ -67,9 +67,6 @@
     <Content Include="MFG-Algos\Generate-Workflow-From-Collection.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="MFG-Algos\Installation.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="MFG-Algos\MFGAlgos.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
