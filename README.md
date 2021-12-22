@@ -16,22 +16,22 @@ With TD-MFG-Workflow Modules you can
 ## Installation
 
 ```sh
-Download Setup.MininingForGold.msi https://www.dropbox.com/s/ihgb1rjrtlwq2hn/Setup.MiningForGold.msi?dl=0
+Step 1) Download Setup.MininingForGold.msi https://www.dropbox.com/s/ihgb1rjrtlwq2hn/Setup.MiningForGold.msi?dl=0
 ```
 ```sh
-Right click Setup.MininingForGold.msi -> Properties -> Unblock the msi file
+Step 2) Right click Setup.MininingForGold.msi -> Properties -> Unblock the msi file
 ```
 ```sh
-Install with serial number: 1111111-1171111
+Step 3) Install with serial number: 1111111-1171111
 ```
 ```sh
-Open a new Powershell ISE window as Administrator and run this command mine -Upgrade
+Step 4) Open a new Powershell ISE window as Administrator and run this command mine -Upgrade
 ```
 ```sh
-Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
+Step 5) Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
 ```
 ```sh
-Optionally you might want to run this command if powershell execution is blocked on your machine. Set-ExecutionPolicy -ExecutionPolicy Unrestricted # Run this as Admin in Powershell ISE
+Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Set-ExecutionPolicy -ExecutionPolicy Unrestricted # Run this as Admin in Powershell ISE
 ```
 
 ## Future Upgrades
