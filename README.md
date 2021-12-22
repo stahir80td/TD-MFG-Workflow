@@ -293,6 +293,6 @@ Imports symbols and data from Trade Station directory. If no parameter is specif
 
 If you want to limit it to specific symbol run it as SQ-Import-Symbols -Symbol AAPL -Instrument "Standard stock"
 
-To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath "You TS Data folder where you keep .csv"
+To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath "Your TS Data folder where you keep .csv"
 
 ***
