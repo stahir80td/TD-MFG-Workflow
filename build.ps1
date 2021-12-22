@@ -2,6 +2,18 @@
     Validating commit
 #>
 
+$msifile = "$PSScriptRoot\MSI\MSI.vdproj"
+
+$upgradeCodeLine = (gc $msifile) | where {$_ -like "*UpgradeCode*"}
+$newUpgradeCode = "$($upgradeCodeLine.Split("{")[0]){$(New-Guid)}"""
+
+(Get-Content $msifile).replace($upgradeCodeLine, $newUpgradeCode) | Set-Content $msifile
+
+$upgradeCodeLine = (gc $msifile) | where {$_ -like "*ProductCode*"}
+$newUpgradeCode = "$($upgradeCodeLine.Split("{")[0]){$(New-Guid)}"""
+
+(Get-Content $msifile).replace($upgradeCodeLine, $newUpgradeCode) | Set-Content $msifile
+
 $dirs = get-childitem 'C:\Program Files (x86)' -Directory | where { $_.Name -like '*Microsoft Visual*'}
 
 $foundit = $null

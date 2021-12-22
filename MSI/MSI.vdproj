@@ -1,4 +1,4 @@
-﻿"DeployProject"
+"DeployProject"
 {
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
@@ -186,7 +186,7 @@
         "ProductName" = "8:Mining For Gold - TD"
         "ProductCode" = "8:{676ACF28-5416-45C1-926B-BE330F3AA4FA}"
         "PackageCode" = "8:{D4B5193E-4636-4591-8627-3BE9AE3F52D7}"
-        "UpgradeCode" = "8:{28C43DE9-D724-4231-9742-A33E398A5277}"
+        "UpgradeCode" = "8:{9c6f7b88-703b-4f79-ab76-c88b044da304}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"

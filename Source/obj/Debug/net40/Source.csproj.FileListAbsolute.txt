@@ -26,3 +26,4 @@ C:\Users\17703\Dropbox\MFG-DropBox\Module\Source\bin\Debug\net40\MFG-Algos\Insta
 C:\Users\17703\Dropbox\MFG-DropBox\Module\Source\bin\Debug\net40\MFG-Algos\MFGConfig.json
 C:\Users\17703\Dropbox\MFG-DropBox\Module\Source\bin\Debug\net40\MFG-Algos\quickTest.xml
 C:\Users\17703\Dropbox\MFG-DropBox\Module\Source\bin\Debug\net40\MFG-Algos\web.config
+C:\Users\17703\Dropbox\MFG-DropBox\Module\Source\obj\Debug\net40\Source.csproj.AssemblyReference.cache
