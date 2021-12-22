@@ -22,16 +22,16 @@ Step 1) Download Setup.MininingForGold.msi https://www.dropbox.com/s/ihgb1rjrtlw
 Step 2) Right click Setup.MininingForGold.msi -> Properties -> Unblock the msi file
 ```
 ```sh
-Step 3) Install with serial number: 1111111-1171111
+Step 3) Install with serial number: <strong>1111111-1171111</strong>
 ```
 ```sh
-Step 4) Open a new Powershell ISE window as Administrator and run this command mine -Upgrade
+Step 4) Open a new Powershell ISE window as Administrator and run this command <strong>mine -Upgrade</strong>
 ```
 ```sh
-Step 5) Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
+Step 5) <strong>Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"</strong>
 ```
 ```sh
-Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Set-ExecutionPolicy -ExecutionPolicy Unrestricted # Run this as Admin in Powershell ISE
+Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. <strong>Set-ExecutionPolicy -ExecutionPolicy Unrestricted</strong> # Run this as Admin in Powershell ISE
 ```
 
 ## Future Upgrades
