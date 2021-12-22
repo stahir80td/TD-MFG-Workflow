@@ -296,3 +296,17 @@ If you want to limit it to specific symbol run it as SQ-Import-Symbols -Symbol A
 To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath "Your TS Data folder where you keep .csv"
 
 ***
+## Frequently used command
+
+```sh
+Mine-Common -InstrumentToMine TSLA -GetBacktestTimeframeFromTradeStationFile
+```
+
+Explanation: 
+
+- Creates three workflows. H1/M30, D1/H4 and M30/H1 for TSLA
+- Gets the back test start date from Trade Station .csv file (less typing is better)
+- Uses AAPL and FB as Correlated symbols. You can override them if you want with Correlated_1 and Correlated_2
+- Uses defaults for Drardown, InitialCapital, Average Trades, Average Trades Per Year etc. but if you like to override them use addtional switches
+
+***
