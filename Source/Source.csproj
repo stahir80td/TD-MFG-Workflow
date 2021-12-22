@@ -18,11 +18,16 @@
     <None Remove="MFG-Algos\7zG.exe" />
     <None Remove="MFG-Algos\config.xml" />
     <None Remove="MFG-Algos\descript.ion" />
+    <None Remove="MFG-Algos\Generate-Workflow-From-Collection.ps1" />
     <None Remove="MFG-Algos\History.txt" />
+    <None Remove="MFG-Algos\Installation.ps1" />
     <None Remove="MFG-Algos\License.txt" />
     <None Remove="MFG-Algos\MFGAlgos.psm1" />
+    <None Remove="MFG-Algos\MFGConfig.json" />
+    <None Remove="MFG-Algos\quickTest.xml" />
     <None Remove="MFG-Algos\readme.txt" />
     <None Remove="MFG-Algos\Uninstall.exe" />
+    <None Remove="MFG-Algos\web.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,10 +64,25 @@
     <Content Include="MFG-Algos\descript.ion">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="MFG-Algos\Generate-Workflow-From-Collection.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\Installation.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="MFG-Algos\MFGAlgos.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="MFG-Algos\MFGConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\quickTest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="MFG-Algos\Uninstall.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
