@@ -55,10 +55,10 @@ Now, any time you want to create a new MFG/SQ workflow for a stock/instrument, s
 TD-MFG-InitializeWorkflow
 ```
 
---- Usage Example 1 ---
-
+## Usage Examples
+```sh
 TD-MFG-InitializeWorkflow -InstrumentToMine AAPL -Correlated_1 FB -Correlated_2 TSLA -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500
-
+```
 Explanation:
 
 - InstrumentToMine: This parameter represents the stock/instrument you want to mine. [Default value for this parameter is set to AAPL]
@@ -68,16 +68,15 @@ Explanation:
 - Drawdown: This is max drawdown used to filter strategies [Default value for this parameter is set to 5000]
 - MaxStrategies: This is max number of strategies you want to build [Default value for this parameter is set to 1500]
 
---- Usage Example 2 ---
 
+```sh
 TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 MS -InitialCapital 10000 -Drawdown 2000 -MaxStrategies 1000
-
+```
 Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000
 
---- Usage Example 3 ---
-
+```sh
 TD-MFG-InitializeWorkflow -InstrumentToMine NFLX
-
+```
 Explanation: You want to mine NFLX with default settings. This will use defaults for Correlated_1 (FB), Correlated_2 (GOOG), InitialCaptial (25000), Drawdown (5000) and Maxstrategies (1500)
 
 --- Usage Example 4 ---
