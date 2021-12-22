@@ -151,6 +151,76 @@ function Restore-Databanks($Symbol="All")
 
 }
 
+function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
+{
+    $config = Load-MFG-Config
+    $SQPath = "$($config.MFGConfig.SQPath)"
+    $TSDataPath = "$($config.MFGConfig.TSDataPath)"
+
+    if(-NOT (Test-Path $TSDataPath))
+    {
+        Write-Error "Your Trade Station Data path $TSDataPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
+    }
+
+    if(-NOT (Test-Path $SQPath))
+    {
+        Write-Error "Your Strategy Quant path $SQPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
+    }
+
+    $commandFile = "$PSScriptRoot\ImportSymbols.txt"
+
+    if(Test-Path "$commandFile")
+    {
+        Clear-Content "$commandFile"
+    }
+    else
+    {
+        New-Item "$commandFile"
+    }
+    
+    $files = Get-ChildItem "$TSDataPath" -Recurse -Include *.csv
+
+    foreach($file in $files)
+    {
+        $fileSymbol = $($file.Name.Split("_")[0])
+        
+        if($Symbol -eq "All" -or $fileSymbol -eq $Symbol)
+        {
+            Write-Host "Importing $($file.FullName) ...."
+
+            $Command = "$SQPath\sqcli.exe"
+            $Parms = "-data action=import symbol=$($file.Name.Split(".")[0]) instrument=""$($Instrument)"" filepath=""$($file.FullName)"" timezone=""EETUS"""
+            $Parms | Add-Content -Path "$commandFile"
+        }
+    }
+
+    Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
+
+    $(gc "$commandFile") | Write-Host -ForegroundColor Green
+    
+    Write-Host "`nRunning SQ CLI... `n" -ForegroundColor Cyan
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-run file=""$($commandFile)"
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+        
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$($anotherInstance) You might want to close SQ UI and then run this command again."
+        return
+    }
+    else
+    {
+        $response
+    }
+
+    Write-Host "Completed" -ForegroundColor Green
+   
+}
+
+
 function SQ-List-Symbols()
 {
     $config = Load-MFG-Config
@@ -964,4 +1034,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
