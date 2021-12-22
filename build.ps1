@@ -4,7 +4,7 @@ $foundit = $null
 
 foreach($dir in $dirs)
 {
-    $foundit = Get-ChildItem "$($dir.FullName)" -Recurse | where {$_.Name -eq "devenv.com"}
+    $foundit = Get-ChildItem "$($dir.FullName)" -Recurse | where {$_.Name -eq "devenv.com"} | select -First 1
 }
 
 Write-host "$foundit"
