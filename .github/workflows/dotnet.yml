@@ -17,6 +17,7 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        NUGET_RESTORE_MSBUILD_ARGS: '/p:RestoreProjectFilterMode=""inclusionlist""'
       
     - name: Navigate to Workspace
       run: cd $GITHUB_WORKSPACE
@@ -26,6 +27,9 @@ jobs:
       
     - name: Restore Packages
       run: nuget restore "Mining For Gold - Workflow.sln"
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        NUGET_RESTORE_MSBUILD_ARGS: '/p:RestoreProjectFilterMode=""inclusionlist""'
     
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
