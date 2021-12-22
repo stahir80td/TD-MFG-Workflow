@@ -40,7 +40,7 @@ Optionally you might want to run this command if powershell execution is blocked
 mine -Upgrade #To manually update when you want
 ```
 ```sh
-TD-MFG-InitializeWorkflow -InstrumentToMine AAPL -Correlated_1 FB -Correlated_2 TSLA -InitialCapital 25000 -Drawdown 5000 -MaxStrategies 1500
+Daily-Update #This sets up a windows scheduled task on your machine to download latest powershell modules daily
 ```
 
 ## Verify Installation
