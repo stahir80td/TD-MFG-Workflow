@@ -27,8 +27,9 @@ Step 4) Open a new Powershell ISE window as Administrator and run this command
 ```sh
  mine -Upgrade
 ```
+Step 5) Setup your Trade Station Directory
 ```sh
-Step 5) Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
+Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
 ```
 Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Run this is as Admin in Powershell ISE
 ```sh
