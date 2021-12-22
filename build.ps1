@@ -1,4 +1,8 @@
-﻿$dirs = get-childitem 'C:\Program Files (x86)' -Directory | where { $_.Name -like '*Microsoft Visual*'}
+﻿<#
+    Validating commit
+#>
+
+$dirs = get-childitem 'C:\Program Files (x86)' -Directory | where { $_.Name -like '*Microsoft Visual*'}
 
 $foundit = $null
 
