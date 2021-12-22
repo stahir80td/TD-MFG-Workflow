@@ -1,3 +1,5 @@
+![alt text](https://uploads-ssl.webflow.com/607f3a43ceb7a5679c329711/60826b01655fcd4cd00e03cb_Logo-1.png "Logo")
+
 # TD-MFG-Workflow
 ## _Generate and customize your Strategy Quant Workflows_
 
@@ -27,7 +29,7 @@ Step 5) Setup your Trade Station Directory
 ```sh
 Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
 ```
-Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Run this is as Admin in Powershell ISE
+Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Run this as Admin in Powershell ISE
 ```sh
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
