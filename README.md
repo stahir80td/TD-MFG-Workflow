@@ -1,3 +1,5 @@
+![alt text](https://uploads-ssl.webflow.com/607f3a43ceb7a5679c329711/60826b01655fcd4cd00e03cb_Logo-1.png "Logo")
+
 # TD-MFG-Workflow
 ## _Generate and customize your Strategy Quant Workflows_
 
