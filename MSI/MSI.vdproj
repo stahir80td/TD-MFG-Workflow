@@ -184,9 +184,9 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Mining For Gold - TD"
-        "ProductCode" = "8:{676ACF28-5416-45C1-926B-BE330F3AA4FA}"
+        "PRODUCTCODE" = "8:{C85E8EFD-138D-4E1B-A474-4C8D97728520}"
         "PackageCode" = "8:{D4B5193E-4636-4591-8627-3BE9AE3F52D7}"
-        "UpgradeCode" = "8:{9c6f7b88-703b-4f79-ab76-c88b044da304}"
+        "UPGRADECODE" = "8:{DF7332CA-4064-4EBA-B225-C4F4F4A10973}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
