@@ -1,5 +1,5 @@
 ﻿<#
-    Validating commit - triggers the build
+    Validating commit - triggers the workflow
 #>
 
 $msifile = "$PSScriptRoot\MSI\MSI.vdproj"
