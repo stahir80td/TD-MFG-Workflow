@@ -68,6 +68,7 @@ Explanation:
 - Drawdown: This is max drawdown used to filter strategies [Default value for this parameter is set to 5000]
 - MaxStrategies: This is max number of strategies you want to build [Default value for this parameter is set to 1500]
 
+***
 
 ```sh
 TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 MS -InitialCapital 10000 -Drawdown 2000 -MaxStrategies 1000
