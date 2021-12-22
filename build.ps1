@@ -1,5 +1,6 @@
 ﻿<#
-    Validating commit - triggers the WF
+    a) Updates Product Code and Upgrade Code Pre-Build
+    b) Compiles solution w/ devenv.com. MSBuild doesn't support MSI projects!
 #>
 
 $msifile = "$PSScriptRoot\MSI\MSI.vdproj"
@@ -15,8 +16,6 @@ $newUpgradeCode = "$($upgradeCodeLine.Split("{")[0]){$(New-Guid)}"""
 (Get-Content $msifile).replace($upgradeCodeLine, $($newUpgradeCode.ToUpper())) | Set-Content $msifile
 
 $dirs = get-childitem 'C:\Program Files (x86)' -Directory | where { $_.Name -like '*Microsoft Visual*'}
-
-$foundit = $null
 
 foreach($dir in $dirs)
 {
