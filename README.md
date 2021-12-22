@@ -27,7 +27,7 @@ Step 5) Setup your Trade Station Directory
 ```sh
 Set-MFG-Configuration -TradeStationDataPath "[Update this path where you keep Trade Station CSV files]"
 ```
-Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Run this is as Admin in Powershell ISE
+Step 6) Optionally you might want to run this command if powershell execution is blocked on your machine. Run this as Admin in Powershell ISE
 ```sh
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
