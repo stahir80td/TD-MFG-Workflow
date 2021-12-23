@@ -151,6 +151,119 @@ function Restore-Databanks($Symbol="All")
 
 }
 
+function SQ-Import-Projects($FolderWithCFXFiles = "C:\Algos\SQ\MFG-Results\SQProjects")
+{
+    $config = Load-MFG-Config
+    $SQPath = "$($config.MFGConfig.SQPath)"
+    
+    $commandFile = "$PSScriptRoot\ImportProjects.txt"
+
+    if(Test-Path "$commandFile")
+    {
+        Clear-Content "$commandFile"
+    }
+    else
+    {
+        New-Item "$commandFile"
+    }
+
+    $files = Get-ChildItem "$FolderWithCFXFiles" -Recurse -Include *.cfx
+    foreach($file in $files)
+    {
+        "-project action=loadconfig name=""$($file.Name)"" file=""$($file.FullName)""" | Add-Content "$commandFile"
+    }
+
+    Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
+
+    $(gc "$commandFile") | Write-Host -ForegroundColor Green
+    
+    Write-Host "`nRunning SQ CLI... `n" -ForegroundColor Cyan
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-run file=""$($commandFile)"
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+        
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$($anotherInstance) You might want to close SQ UI and then run this command again."
+        return
+    }
+    else
+    {
+        $response
+    }
+
+    Write-Host "Completed" -ForegroundColor Green
+}
+
+function SQ-Export-Projects()
+{
+    $config = Load-MFG-Config
+    $SQPath = "$($config.MFGConfig.SQPath)"
+    $rootPath = "$($config.MFGConfig.WorkflowResultsPath)"
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-project action=list"
+
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$anotherInstance"
+        return
+    }
+
+    $projects = $response.Where({ $_ -like "*List of available projects*" },'SkipUntil') | select -Skip 2
+
+    $commandFile = "$PSScriptRoot\ExportProjects.txt"
+
+    if(Test-Path "$commandFile")
+    {
+        Clear-Content "$commandFile"
+    }
+    else
+    {
+        New-Item "$commandFile"
+    }
+
+    foreach($project in $projects)
+    {
+
+        if(-not ($project -like "*Exit app*"))
+        {
+            "-project action=saveconfig name=""$($project)"" file=""$($rootPath)\SQProjects\$($project).cfx""" | Add-Content "$commandFile"
+        }
+
+    }
+
+    Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
+
+    $(gc "$commandFile") | Write-Host -ForegroundColor Green
+    
+    Write-Host "`nRunning SQ CLI... `n" -ForegroundColor Cyan
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-run file=""$($commandFile)"
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+        
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$($anotherInstance) You might want to close SQ UI and then run this command again."
+        return
+    }
+    else
+    {
+        $response
+    }
+
+    Write-Host "Completed" -ForegroundColor Green
+}
+
 function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 {
     $config = Load-MFG-Config
@@ -1062,4 +1175,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
