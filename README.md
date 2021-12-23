@@ -15,7 +15,7 @@ With TD-MFG-Workflow Modules you can
 
 Step 1) Download Setup.MininingForGold.msi
 ```sh
- https://www.dropbox.com/s/ihgb1rjrtlwq2hn/Setup.MiningForGold.msi?dl=0
+ https://www.dropbox.com/s/41ia4cpu25ae8k7/Setup.MiningForGold.msi?dl=0
 ```
 Step 2) Right click Setup.MininingForGold.msi -> Properties -> Unblock the msi file
 
