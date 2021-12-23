@@ -615,6 +615,12 @@ If you want to limit it to specific symbol run it as SQ-Import-Symbols -Symbol A
 
 To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath "You TS Data folder where you keep .csv"
 
+--- Usage Example 28 ---
+
+SQ-Export-Projects
+
+Exports SQ projects and saves them to .cfx files
+
 "@
 
     Write-Host $HelpContent -ForegroundColor Cyan
