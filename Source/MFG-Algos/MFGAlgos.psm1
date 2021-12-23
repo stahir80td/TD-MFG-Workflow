@@ -628,6 +628,65 @@ Exports SQ projects and saves them to .cfx files
 
 }
 
+function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected="25000")
+{
+    $lines = $EasyLanguageScript.Split("`n")
+    $UseMoneyManagement = $lines | where {$_ -like "*bool UseMoneyManagement(*"}
+    $mmUseAccountBalance = $lines | where {$_ -like "*mmUseAccountBalance(*"}
+    $mmMaxSize = $lines | where {$_ -like "*double mmMaxSize(*"}
+    $mmLotsIfNoMM = $lines | where {$_ -like "*double mmLotsIfNoMM*"}
+    $InitialCapital = $lines | where {$_ -like "*InitialCapital(*"}
+
+    if($UseMoneyManagement -ne $null -and $UseMoneyManagement.Trim() -ne "bool UseMoneyManagement(true),")
+    {
+        Write-Error "NOT FOUND bool UseMoneyManagement(true) -- Incorrect value is set $UseMoneyManagement"
+    }
+    elseif($UseMoneyManagement -eq $null)
+    {
+        Write-Error "NOT FOUND bool UseMoneyManagement(true)"
+    }
+
+    if($mmUseAccountBalance -ne $null -and $mmUseAccountBalance.Trim() -ne "bool mmUseAccountBalance(false),")
+    {
+        Write-Error "NOT FOUND bool mmUseAccountBalance(false), -- Incorrect value is set $mmUseAccountBalance"
+    }
+    elseif($mmUseAccountBalance -eq $null)
+    {
+        Write-Error "NOT FOUND bool mmUseAccountBalance(false)"
+    }
+
+    if($mmMaxSize -ne $null -and $mmMaxSize.Trim() -ne "double mmMaxSize(99999.0),")
+    {
+        Write-Error "NOT FOUND double mmMaxSize(99999.0), -- Incorrect value is set $mmMaxSize"
+    }
+    elseif($mmMaxSize -eq $null)
+    {
+        Write-Error "NOT FOUND double mmMaxSize(99999.0)"
+    }
+
+    if($mmLotsIfNoMM -ne $null -and $mmLotsIfNoMM.Trim() -ne "double mmLotsIfNoMM(1),")
+    {
+        Write-Error "NOT FOUND double mmLotsIfNoMM(1), -- Incorrect value is set $mmLotsIfNoMM"
+    }
+    elseif($mmLotsIfNoMM -eq $null)
+    {
+        Write-Error "NOT FOUND bool mmLotsIfNoMM(1)"
+    }
+
+    $expectedInitialCapital = "InitialCapital($InitialCapitalExpected);"
+
+    if($InitialCapital -ne $null -and $InitialCapital.Trim() -ne "$expectedInitialCapital")
+    {
+        Write-Error "NOT FOUND $expectedInitialCapital -- Incorrect value is set $InitialCapital"
+    }
+    elseif($InitialCapital -eq $null)
+    {
+        Write-Error "NOT FOUND bool $expectedInitialCapital"
+    }
+    
+}
+
+
 function Clear-Databanks()
 {
     $confirmation = Read-Host "Are you Sure You Want To Proceed? This will remove most of the SQ results. You should backup your results before using this command. Press Y to delete databanks"
@@ -1181,4 +1240,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
