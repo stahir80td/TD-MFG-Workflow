@@ -1,6 +1,14 @@
-﻿@{
-    ViewData["Title"] = "TD-MFG-Algos Demo";
+﻿@page
+@using FolderExplorer.Views.Account
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model LoginModel
+@{
+    ViewData["Title"] = "Sign in";
 }
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -35,24 +43,37 @@
         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
     </a>
-    
 </div>
 
-<br />
+<div class="row">
+    <br />
+    <br />
 
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="embed-responsive embed-responsive-16by9">
-        <video src="~/images/video1403601575.mp4" type="video/mp4" autoplay controls></video>
-      </div>
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    <div class="col-md-3">
+        <form method="post">
+            <p>Sign into the app with the email address and password provided on the Trading Dominion <a href="https://forums.tradingdominion.com/threads/create-and-customize-strategy-quant-workflow.1019/">forum</a></p>
+            <hr>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control">
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control">
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default">Log in</button>
+            </div>
+        </form>
     </div>
-    <div class="col-xs-12">
-    <br />
-    <br />
-    <h2 id="installation">Installation package is not available on dropbox anymore</h2>
-    <p><br />
-    <br>Please download setup from this <a href ="~/Explorer">link</a>
-    </div>
-  </div>
 </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

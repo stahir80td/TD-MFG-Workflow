@@ -10,6 +10,7 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace FolderExplorer
 {
@@ -26,8 +27,10 @@ namespace FolderExplorer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+           
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +49,10 @@ namespace FolderExplorer
             app.UseStaticFiles();
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
+                       
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -60,8 +66,11 @@ namespace FolderExplorer
                     name: "Explorer",
                     "Explorer/{*path}",
                     defaults: new { controller = "Explorer", action = "Index" });
-            });
 
+                endpoints.MapRazorPages();
+            });
+            
+            
         }
     }
 }

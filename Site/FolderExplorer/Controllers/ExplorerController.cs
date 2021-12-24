@@ -1,4 +1,5 @@
 ﻿using FolderExplorer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace FolderExplorer.Controllers
 
         //
         // GET: /Explorer/
-
+        [Authorize]
         public IActionResult Index(string path)
         {
             var folderPath = _hostingEnvironment.ContentRootPath + "\\Folder\\";
