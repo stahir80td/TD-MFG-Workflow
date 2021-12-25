@@ -1,4 +1,13 @@
-﻿function Get-MFG-Configuration()
+﻿<#
+    .DESCRIPTION
+        This commands prints your MFG configuration settings that include path to Trade Station, path to Strategy Quant, path to Strategy Quant workspace and endpoint used to get package updates
+
+    .SYNOPSIS
+
+    .EXAMPLE
+        Get-MFG-Configuration
+#>
+function Get-MFG-Configuration()
 {
     $configPath = "$($PSScriptRoot)\MFGConfig.json"
     
@@ -10,6 +19,15 @@
     Get-Content "$configPath"
 }
 
+<#
+    .DESCRIPTION
+        This commands sets up a Windows scheduled task to get latest powershell package on daily bases. You can open Task Scheduler on windows machine to locate the task under MFG folder
+
+    .SYNOPSIS
+
+    .EXAMPLE
+        Daily-Update
+#>
 function Daily-Update()
 {
     $scheduleObject = New-Object -ComObject schedule.service
@@ -32,6 +50,27 @@ function Load-MFG-Config()
     Get-MFG-Configuration | Out-String | ConvertFrom-Json
 }
 
+<#
+    .DESCRIPTION
+        This commands sets your MFG configuration settings to your local machine. This include path to Trade Station, path to Strategy Quant, path to Strategy Quant workspace and endpoint used to get package updates
+
+    .SYNOPSIS
+
+    .PARAMETER TradeStationDataPath
+        Set this to the folder location where you save Trade Station .csv files
+
+    .PARAMETER SQPath
+        Set this to the folder location where StrategyQuant is installed
+
+    .PARAMETER WorkflowResultsPath
+        Set this to the folder location where you would like StrategyQuant to save databank results after each task is completed in the workflow
+
+    .PARAMETER UpgradeURL
+        This doesn't need to be changed unless asked. Mine -Upgrade command updates your powershell package based on this endpoint
+
+    .EXAMPLE
+        Set-MFG-Configuration -TradeStationDataPath "C:\TradeStation\Data" -SQPath "C:\StrategyQuantX" -WorkflowResultsPath "C:\Algos\SQ\MFG-Results"
+#>
 function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     $TradeStationDataPath = "C:\Users\17703\Dropbox\MFG-DropBox\TradeStation\Data", 
     $WorkflowResultsPath = "C:\Algos\SQ\MFG-Results", 
@@ -89,6 +128,21 @@ function Upgrade-Module([Parameter(Mandatory=$false)]
 
 }
 
+<#
+    .DESCRIPTION
+        This commands restores your databanks from the WorkflowResultsPath (See Get-MFG-Configuration) folder which is generally set to C:\Algos\SQ\MFG-Results to StarategyQuant user folder C:\StrategyQuantX\user\projects This folder is constructed based on SQPath. See Get-MFG-Configuration for details
+
+    .SYNOPSIS
+
+    .PARAMETER Symbol
+        If you don't specify -Symbol parameter, this command will restore databanks for all symbols. If you want to limit restoration to specific symbol, specify that
+
+    .EXAMPLE
+        Restore-Databanks
+
+    .EXAMPLE
+        Restore-Databanks -Symbol "AAPL"
+#>
 function Restore-Databanks($Symbol="All")
 {
 
@@ -198,6 +252,15 @@ function SQ-Import-Projects($FolderWithCFXFiles = "C:\Algos\SQ\MFG-Results\SQPro
     Write-Host "Completed" -ForegroundColor Green
 }
 
+<#
+    .DESCRIPTION
+        This commands will export all StrategyQuant projects (.CFX) files and saves them under WorkflowResultsPath (See Get-MFG-Configuration for details). You might want to close SQ UI when you run this command.
+
+    .SYNOPSIS
+
+    .EXAMPLE
+        SQ-Export-Projects
+#>
 function SQ-Export-Projects()
 {
     $config = Load-MFG-Config
@@ -264,6 +327,24 @@ function SQ-Export-Projects()
     Write-Host "Completed" -ForegroundColor Green
 }
 
+<#
+    .DESCRIPTION
+        This commands imports Symbols and its data to StrategyQuant based on the .csv files you have stored on your local machine under TSDataPath folder (See Get-MFG-Configuratio for details). You might want to close SQ UI to run this
+
+    .SYNOPSIS
+
+    .PARAMETER Symbol
+        If you don't specify -Symbol parameter, this command will add all symbols that it finds under TSDataPath (Trade Station Data Path). If you only want to import one Symbol specify that 
+
+    .PARAMETER Instrument
+        This is the instrument name for your symbol that will be imported to Strategy Quant
+    
+    .EXAMPLE
+        SQ-Import-Symbols -Symbol "AAPL" -Instrument "Standard stock"
+
+    .EXAMPLE
+        SQ-Import-Symbols
+#>
 function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 {
     $config = Load-MFG-Config
@@ -333,7 +414,15 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
    
 }
 
+<#
+    .DESCRIPTION
+        This commands prints all symbols available in StrategyQuant. You might want to close SQ UI to run this
 
+    .SYNOPSIS
+
+    .EXAMPLE
+        SQ-List-Symbols
+#>
 function SQ-List-Symbols()
 {
     $config = Load-MFG-Config
@@ -364,6 +453,21 @@ function SQ-List-Symbols()
     
 }
 
+<#
+    .DESCRIPTION
+        This commands generates MFG Workflow command based on Symbol available in SQ. If you don't specify any parameter it will generate it for all Symbols. You might want to close SQ UI to run this
+
+    .SYNOPSIS
+
+    .PARAMETER Symbol
+        If you don't specify -Symbol parameter, this command will generate workflow command for all symbols. 
+
+    .EXAMPLE
+        SQ-Generate-Workflow-Command -Symbol "AAPL"
+
+    .EXAMPLE
+        SQ-Generate-Workflow-Command
+#>
 function SQ-Generate-Workflow-Command($Symbol = "All")
 {
     $found = $false
@@ -628,6 +732,24 @@ Exports SQ projects and saves them to .cfx files
 
 }
 
+<#
+    .DESCRIPTION
+        This commands validates EasyLanguage script provided to this function as a string parameter
+
+    .SYNOPSIS
+
+    .PARAMETER EasyLanguageScript
+        Create a string variable and pass it in to this function. This string represents text of your EasyLanguage copied from SQ
+
+    .PARAMETER InitialCapitalExpected
+        You can specify Initial Capital to look for in the script
+
+    .EXAMPLE
+        SQ-Generate-Workflow-Command -EasyLanguageScript $myEasyLanguageSciptInString 
+
+    .EXAMPLE
+        SQ-Generate-Workflow-Command -EasyLanguageScript $myEasyLanguageSciptInString -InitialCapitalExpected 10000
+#>
 function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected="25000")
 {
     $lines = $EasyLanguageScript.Split("`n")
@@ -687,6 +809,18 @@ function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected=
 }
 
 
+<#
+    .DESCRIPTION
+        Removes everything except Recency and Final results stored by SQ under C:\StrategyQuantX\user\projects. 
+        Note, if you plan to use this command, make sure to backup your data before running this command. 
+        The template I am using, that comes with the powershell commands saves everything (results) under C:\Algos\SQ\MFG-Results 
+        Therefore, it is perfectly fine for me to delete SQ folders. 
+        I only keep Final and Recency so UI can give me a clue if project has been mined already or not. 
+        Backup data before running this command
+
+    .EXAMPLE
+        Clear-Databanks
+#>
 function Clear-Databanks()
 {
     $confirmation = Read-Host "Are you Sure You Want To Proceed? This will remove most of the SQ results. You should backup your results before using this command. Press Y to delete databanks"
@@ -761,6 +895,82 @@ function Get-SymbolTimeframe($timeframe,
     return $computedTimeFrame
 }
 
+<#
+    .DESCRIPTION
+        Creates three workflows. H1/M30, D1/H4 and M30/H1 for TSLA
+        Gets the back test start date from Trade Station .csv file (less typing is better)
+        Uses AAPL and FB as Correlated symbols. You can override them if you want with Correlated_1 and Correlated_2
+        Uses defaults for Drardown, InitialCapital, Average Trades, Average Trades Per Year etc. but if you like to override them use addtional switches
+        Mine-Common is the alias for this command
+
+    .SYNOPSIS
+
+    .PARAMETER InstrumentToMine
+        This is the symbol name you want to mine    
+
+    .PARAMETER Correlated_1
+        This is the symbol for correlated market
+
+    .PARAMETER Correlated_2
+        This is the symbol for correlated market
+
+    .PARAMETER InitialCapital
+        Initial Capital allocated to run this strategy
+
+    .PARAMETER Drawdown
+        Maximum drawdown to filter trades
+
+    .PARAMETER MaxStrategies
+        Total strategies you want to Build before checking Recency step
+
+    .PARAMETER FullDurationStartDate
+        This is starting date of your backtest
+
+    .PARAMETER FullDurationEndDate
+        This is when your full span test ends
+
+    .PARAMETER CorrelatedSymbolTimeframe
+        This is correlated symbol's timeframe
+
+    .PARAMETER UnCorrelatedSymbolTimeframe
+        This is un-correlated symbol's timeframe
+
+    .PARAMETER Session
+        This is the Session name used by workflow
+
+    .PARAMETER SymbolTimeframeConvention
+        SQ naming convention to use for instruments. SQ sets it as MS_M30 instead of MFG's convention of MS_30M. 
+
+    .PARAMETER UnCorrelatedSymbol
+        This is un-correlated symbol
+
+    .PARAMETER AverageTradesPerYear
+        Average Trades Per Year
+
+    .PARAMETER AverageTrade
+        Average Trades
+
+    .PARAMETER GetBacktestTimeframeFromSQ
+        Gets backtest start date from Strategy Quant. You might want to have SQ UI closed to run this
+
+    .PARAMETER GetBacktestTimeframeFromTradeStationFile
+        Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-CommonTimeframes -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-CommonTimeframes -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-CommonTimeframes -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-CommonTimeframes -InstrumentToMine "AAPL" -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine-Common -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+#>
 function TD-MFG-InitializeWorkflow-CommonTimeframes
 (
     [Parameter(ValueFromPipeline = $true)]
@@ -821,6 +1031,78 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
 
 }
 
+<#
+    .DESCRIPTION
+        Creates M30/H1 Workflow. Mine-M30 is the alias for this command
+        
+    .SYNOPSIS
+
+    .PARAMETER InstrumentToMine
+        This is the symbol name you want to mine    
+
+    .PARAMETER Correlated_1
+        This is the symbol for correlated market
+
+    .PARAMETER Correlated_2
+        This is the symbol for correlated market
+
+    .PARAMETER InitialCapital
+        Initial Capital allocated to run this strategy
+
+    .PARAMETER Drawdown
+        Maximum drawdown to filter trades
+
+    .PARAMETER MaxStrategies
+        Total strategies you want to Build before checking Recency step
+
+    .PARAMETER FullDurationStartDate
+        This is starting date of your backtest
+
+    .PARAMETER FullDurationEndDate
+        This is when your full span test ends
+
+    .PARAMETER CorrelatedSymbolTimeframe
+        This is correlated symbol's timeframe
+
+    .PARAMETER UnCorrelatedSymbolTimeframe
+        This is un-correlated symbol's timeframe
+
+    .PARAMETER Session
+        This is the Session name used by workflow
+
+    .PARAMETER SymbolTimeframeConvention
+        SQ naming convention to use for instruments. SQ sets it as MS_M30 instead of MFG's convention of MS_30M. 
+
+    .PARAMETER UnCorrelatedSymbol
+        This is un-correlated symbol
+
+    .PARAMETER AverageTradesPerYear
+        Average Trades Per Year
+
+    .PARAMETER AverageTrade
+        Average Trades
+
+    .PARAMETER GetBacktestTimeframeFromSQ
+        Gets backtest start date from Strategy Quant. You might want to have SQ UI closed to run this
+
+    .PARAMETER GetBacktestTimeframeFromTradeStationFile
+        Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-M30 -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-M30 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-M30 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-M30 -InstrumentToMine "AAPL" -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine-M30 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+#>
 function TD-MFG-InitializeWorkflow-M30
 (
     [Parameter(ValueFromPipeline = $true)]
@@ -869,6 +1151,77 @@ function TD-MFG-InitializeWorkflow-M30
 
 }
 
+<#
+    .DESCRIPTION
+        Creates D1 and H4 Workflow
+        Mine-D1 is the alias for this command
+        
+    .PARAMETER InstrumentToMine
+        This is the symbol name you want to mine    
+
+    .PARAMETER Correlated_1
+        This is the symbol for correlated market
+
+    .PARAMETER Correlated_2
+        This is the symbol for correlated market
+
+    .PARAMETER InitialCapital
+        Initial Capital allocated to run this strategy
+
+    .PARAMETER Drawdown
+        Maximum drawdown to filter trades
+
+    .PARAMETER MaxStrategies
+        Total strategies you want to Build before checking Recency step
+
+    .PARAMETER FullDurationStartDate
+        This is starting date of your backtest
+
+    .PARAMETER FullDurationEndDate
+        This is when your full span test ends
+
+    .PARAMETER CorrelatedSymbolTimeframe
+        This is correlated symbol's timeframe
+
+    .PARAMETER UnCorrelatedSymbolTimeframe
+        This is un-correlated symbol's timeframe
+
+    .PARAMETER Session
+        This is the Session name used by workflow
+
+    .PARAMETER SymbolTimeframeConvention
+        SQ naming convention to use for instruments. SQ sets it as MS_M30 instead of MFG's convention of MS_30M. 
+
+    .PARAMETER UnCorrelatedSymbol
+        This is un-correlated symbol
+
+    .PARAMETER AverageTradesPerYear
+        Average Trades Per Year
+
+    .PARAMETER AverageTrade
+        Average Trades
+
+    .PARAMETER GetBacktestTimeframeFromSQ
+        Gets backtest start date from Strategy Quant. You might want to have SQ UI closed to run this
+
+    .PARAMETER GetBacktestTimeframeFromTradeStationFile
+        Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-D1 -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-D1 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-D1 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow-D1 -InstrumentToMine "AAPL" -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine-D1 -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+#>
 function TD-MFG-InitializeWorkflow-D1
 (
     [Parameter(ValueFromPipeline = $true)]
@@ -930,7 +1283,87 @@ function Get-BackTestTimeframeFromSQ($Symbol, $FullDurationStartDate)
     }
 }
 
+<#
+    .DESCRIPTION
+        Creates Workflow based on BackTestTimeframe and AlternateTimeframe specified. Mine is the alias for this command
+        
+    .SYNOPSIS
 
+    .PARAMETER InstrumentToMine
+        This is the symbol name you want to mine    
+
+    .PARAMETER Correlated_1
+        This is the symbol for correlated market
+
+    .PARAMETER Correlated_2
+        This is the symbol for correlated market
+
+    .PARAMETER BacktestTimeframe
+        Backtest timeframe
+
+    .PARAMETER InitialCapital
+        Initial Capital allocated to run this strategy
+
+    .PARAMETER Drawdown
+        Maximum drawdown to filter trades
+
+    .PARAMETER MaxStrategies
+        Total strategies you want to Build before checking Recency step
+
+    .PARAMETER FullDurationStartDate
+        This is starting date of your backtest
+
+    .PARAMETER FullDurationEndDate
+        This is when your full span test ends
+
+    .PARAMETER CorrelatedSymbolTimeframe
+        This is correlated symbol's timeframe
+
+    .PARAMETER UnCorrelatedSymbolTimeframe
+        This is un-correlated symbol's timeframe
+
+    .PARAMETER Session
+        This is the Session name used by workflow
+
+    .PARAMETER SymbolTimeframeConvention
+        SQ naming convention to use for instruments. SQ sets it as MS_M30 instead of MFG's convention of MS_30M. 
+
+    .PARAMETER UnCorrelatedSymbol
+        This is un-correlated symbol
+
+    .PARAMETER Upgrade
+        Upgrades your pwoershell modules
+
+    .PARAMETER AverageTradesPerYear
+        Average Trades Per Year
+
+    .PARAMETER AverageTrade
+        Average Trades
+
+    .PARAMETER GetBacktestTimeframeFromSQ
+        Gets backtest start date from Strategy Quant. You might want to have SQ UI closed to run this
+
+    .PARAMETER GetBacktestTimeframeFromTradeStationFile
+        Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine -Upgrade
+
+    .EXAMPLE
+        Mine -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile -BacktestTimeframe D1 -AlternateTimeframe H4
+#>
 function TD-MFG-InitializeWorkflow(
     [Parameter(ValueFromPipeline = $true)]
     [string[]]
@@ -1107,6 +1540,87 @@ function TD-MFG-InitializeWorkflow(
     END {}
 }
 
+<#
+    .DESCRIPTION
+        Generates workflow w/ five symbols to quickly validate if we see some strategies
+        
+    .SYNOPSIS
+
+    .PARAMETER Symbol_1
+        This is first symbol    
+
+    .PARAMETER Symbol_2
+        This is second symbol
+
+    .PARAMETER Symbol_3
+        This is third symbol
+
+    .PARAMETER Symbol_4
+        This is forth symbol
+
+    .PARAMETER Symbol_5
+        This is fifth symbol
+
+    .PARAMETER TestDurationInMinutes
+        Test will run for these many minutes on each symbol
+
+    .PARAMETER InitialCapital
+        Initial Capital allocated to run this strategy
+
+    .PARAMETER Drawdown
+        Maximum drawdown to filter trades
+
+    .PARAMETER MaxStrategies
+        Total strategies you want to Build before checking Recency step
+
+    .PARAMETER FullDurationStartDate
+        This is starting date of your backtest
+
+    .PARAMETER FullDurationEndDate
+        This is when your full span test ends
+
+    .PARAMETER UnCorrelatedSymbolTimeframe
+        This is un-correlated symbol's timeframe
+
+    .PARAMETER Session
+        This is the Session name used by workflow
+
+    .PARAMETER SymbolTimeframeConvention
+        SQ naming convention to use for instruments. SQ sets it as MS_M30 instead of MFG's convention of MS_30M. 
+
+    .PARAMETER BacktestTimeframe
+        Backtest timeframe
+
+    .PARAMETER AverageTradesPerYear
+        Average Trades Per Year
+
+    .PARAMETER AverageTrade
+        Average Trades
+
+    .PARAMETER GetBacktestTimeframeFromSQ
+        Gets backtest start date from Strategy Quant. You might want to have SQ UI closed to run this
+
+    .PARAMETER GetBacktestTimeframeFromTradeStationFile
+        Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.26" -Correlated_1 "TSLA"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -FullDurationStartDate "2005.01.06" -Session "RTH"
+
+    .EXAMPLE
+        TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine -Upgrade
+
+    .EXAMPLE
+        Mine -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
+#>
 function TD-MFG-Test-Workflow(
     $Symbol_1 = "AAPL", 
     $Symbol_2 = "SHOP", 

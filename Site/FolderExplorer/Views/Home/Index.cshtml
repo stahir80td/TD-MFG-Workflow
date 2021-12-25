@@ -2,6 +2,117 @@
     ViewData["Title"] = "Home Page";
 }
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushPowerShell.min.js" charset="utf-8"></script>
+	<script>
+		$(document).ready(function() {
+			$(".toggle_container").hide();
+			var previousId;
+		    if(location.hash) {
+		        var id = location.hash.slice(1);    //Get rid of the # mark
+		        var elementToShow = $("#" + id);    //Save local reference
+		        if(elementToShow.length) {                   //Check if the element exists
+		            elementToShow.slideToggle('fast');       //Show the element
+		            elementToShow.addClass("check_list_selected");    //Add class to element (the link)
+		        }
+		        previousId = id;
+		    }
+
+			$('.nav-menu a, .psLink a').click(function() {
+                $(".sidebar-navbar-collapse").collapse('hide');
+				$('.toggle_container').hide();                 // Hide all
+				var elem = $(this).prop("hash");
+				$(elem).toggle('fast');   						// Show HREF/to/ID one
+				history.pushState({}, '', $(this).attr("href"));
+				window.scrollTo(0, 0);
+				return false;
+			});
+			SyntaxHighlighter.defaults['toolbar'] = false;
+			SyntaxHighlighter.defaults['gutter'] = false;
+			SyntaxHighlighter.all();
+			
+			$('#searchList').btsListFilter('#searchinput', {itemChild: 'a', initial: false, resetOnBlur: true});
+            
+            $(document).keyup(function( e ) {
+                if(!$('#searchinput').is(':focus') && e.which >= 65 && e.which <= 90 ){
+                   $('#searchinput').val(String.fromCharCode(e.keyCode));
+                   $('#searchinput').focus();
+                }
+            });
+            $(document).click(function() {
+                $('#searchinput').blur();
+            });
+		});
+	</script>
+    <!-- bootstrap-list-filter.min.js - removed as external resource and added as content -->
+    <script>
+    /* 
+     * bootstrap-list-filter v0.1.7 - 2015-03-30 
+     * 
+     * Copyright 2015 Stefano Cudini 
+     * stefano.cudini@gmail.com 
+     * http://labs.easyblog.it/ 
+     * 
+     * Licensed under the MIT license. 
+     * 
+     * Demos: 
+     * http://labs.easyblog.it/bootstrap-list-filter/ 
+     * 
+     * Source: 
+     * git@github.com:stefanocudini/bootstrap-list-filter.git 
+     * 
+     */
+    !function(a){a.fn.btsListFilter=function(b,c){function d(a,b){return a.replace(/\{ *([\w_]+) *\}/g,function(a,c){return b[c]||""})}function e(a,b){var c;return b=b||300,function(){var d=this,e=arguments;clearTimeout(c),c=setTimeout(function(){a.apply(d,Array.prototype.slice.call(e))},b)}}var f,g=this,h=a(this),i=a(b),j=h;return c=a.extend({delay:300,minLength:1,initial:!0,eventKey:"keyup",resetOnBlur:!0,sourceData:null,sourceTmpl:'<a class="list-group-item" href="#"><span>{title}</span></a>',sourceNode:function(a){return d(c.sourceTmpl,a)},emptyNode:function(){return'<a class="list-group-item well" href="#"><span>No Results</span></a>'},itemEl:".list-group-item",itemChild:null,itemFilter:function(b,d){d=d&&d.replace(new RegExp("[({[^.$*+?\\]})]","g"),"");var e=a(b).text(),f=c.initial?"^":"",g=new RegExp(f+d,"i");return g.test(e)}},c),i.on(c.eventKey,e(function(){var b=a(this).val();c.itemEl&&(j=h.find(c.itemEl)),c.itemChild&&(j=j.find(c.itemChild));var d=j.filter(function(){return c.itemFilter.call(g,this,b)}),e=j.not(d);c.itemChild&&(d=d.parents(c.itemEl),e=e.parents(c.itemEl).hide()),""!==b&&b.length>=c.minLength?(d.show(),e.hide(),"function"===a.type(c.sourceData)?(d.hide(),e.hide(),f&&(a.isFunction(f.abort)?f.abort():a.isFunction(f.stop)&&f.stop()),f=c.sourceData.call(g,b,function(b){if(f=null,d.hide(),e.hide(),h.find(".bts-dynamic-item").remove(),b&&0!==b.length)for(var i in b)a(c.sourceNode.call(g,b[i])).addClass("bts-dynamic-item").appendTo(h);else a(c.emptyNode.call(g)).addClass("bts-dynamic-item").appendTo(h)})):0===d.length&&a(c.emptyNode.call(g)).addClass("bts-dynamic-item").appendTo(h)):(d.show(),e.show(),h.find(".bts-dynamic-item").remove())},c.delay)),c.resetOnBlur&&i.on("blur",function(){a(this).val("").trigger(c.eventKey)}),h}}(jQuery);
+</script>
+
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.min.css" rel="stylesheet" charset="utf-8">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCoreDefault.min.css" rel="stylesheet" charset="utf-8">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" charset="utf-8">
+				
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<style>
+		  .syntaxhighlighter {
+		      overflow-y: hidden !important;
+		      overflow-x: auto !important;
+		  }
+		  pre {
+		      min-height: 30px;
+		  }
+		  .navbar-nav {
+		      height: 100%;
+		      overflow-y: auto;
+		  }
+		  .form-group {
+		      padding-top: 12px;
+		      padding-left: 12px;
+		      padding-right: 12px;
+		  }
+		  .sidebar-nav .navbar-header {
+		      float: none;
+		  }
+	      .sidebar-nav .navbar li a {
+	          padding-top: 4px;
+	          padding-bottom: 4px;
+	      }
+		  .sidebar-nav .navbar ul {
+		          float: none;
+		      }
+		      .sidebar-nav .navbar ul:not {
+		          display: block;
+		      }
+		      .sidebar-nav .navbar li {
+		          float: none;
+		          display: block;
+		      }
+		  }
+		</style>
+
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -75,149 +186,6 @@
 <p>Now, any time you want to create a new MFG/SQ workflow for a stock/instrument, simply open &quot;Windows Powershell ISE&quot; as Administrator and run following command </p>
 <pre><code class="lang-sh"><span class="hljs-attribute">TD-MFG-InitializeWorkflow</span>
 </code></pre>
-<h2 id="usage-examples">Usage Examples</h2>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine AAPL -Correlated_1 FB -Correlated_2 TSLA -InitialCapital <span class="hljs-number">25000</span> -Drawdown <span class="hljs-number">5000</span> -MaxStrategies <span class="hljs-number">1500</span>
-</code></pre>
-<p>Explanation:</p>
-<ul>
-<li>InstrumentToMine: This parameter represents the stock/instrument you want to mine. [Default value for this parameter is set to AAPL]</li>
-<li>Correlated_1: This stock/instrument symbol is used to cross-check correlation [Default value for this parameter is set to FB]</li>
-<li>Correlated_2: This stock/instrument symbol is used to cross-check correlation [Default value for this parameter is set to GOOG]</li>
-<li>InitialCapital: Planned capital to run this strategy [Default value for this parameter is set to 25000]</li>
-<li>Drawdown: This is max drawdown used to filter strategies [Default value for this parameter is set to 5000]</li>
-<li>MaxStrategies: This is max number of strategies you want to build [Default value for this parameter is set to 1500]</li>
-</ul>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 <span class="hljs-keyword">MS</span> <span class="hljs-title">-InitialCapital</span> <span class="hljs-number">10000</span> -Drawdown <span class="hljs-number">2000</span> -MaxStrategies <span class="hljs-number">1000</span>
-</code></pre>
-<p>Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-attribute">TD-MFG-InitializeWorkflow -InstrumentToMine NFLX</span>
-</code></pre>
-<p>Explanation: You want to mine NFLX with default settings. This will use defaults for Correlated_1 (FB), Correlated_2 (GOOG), InitialCaptial (25000), Drawdown (5000) and Maxstrategies (1500)</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital <span class="hljs-number">25000</span> -Drawdown <span class="hljs-number">5000</span> -MaxStrategies <span class="hljs-number">1500</span> -FullDurationStartDate <span class="hljs-string">"2014.05.01"</span> -FullDurationEndDate <span class="hljs-string">"2021.11.30"</span>
-</code></pre>
-<p>Explanation:</p>
-<p>You would like to mine MC with V and JPM as correlated symbols. 25k Initial Captial and max drawdown of 5k.</p>
-<p>Date Format is yyyy.MM.dd (4 digits for year, 2 digits for month and 2 digits for day)</p>
-<p>40% IS (step 2 in the workflow; Build phase)
-30% OOS (step 2 in the workflow; Build phase)
-30% OOS (step 3 in the workflow; Recency)</p>
-<p>Note: If you are providing dates as input parameters, make sure they fall in the date range imported for the instrument (from CSV).</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine MC -Correlated_1 V -Correlated_2 JPM -InitialCapital <span class="hljs-number">25000</span> -Drawdown <span class="hljs-number">5000</span> -MaxStrategies <span class="hljs-number">1500</span> -BacktestTimeframe M30 -AlternateTimeframe H1
-</code></pre>
-<p>Explanation:</p>
-<p>You would like to mine MC with V and JPM as correlated symbols. 25k Initial Captial and max drawdown of 5k.</p>
-<p>Backtest Timeframe will be M30
-Alternate Timeframe will be H1</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 <span class="hljs-keyword">MS</span> <span class="hljs-title">-InitialCapital</span> <span class="hljs-number">10000</span> -Drawdown <span class="hljs-number">2000</span> -MaxStrategies <span class="hljs-number">1000</span> -Session RTH
-</code></pre>
-<p>Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000. RTH will be used for Session. Default is &#39;No Session&#39;</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 <span class="hljs-keyword">MS</span> <span class="hljs-title">-InitialCapital</span> <span class="hljs-number">10000</span> -Drawdown <span class="hljs-number">2000</span> -MaxStrategies <span class="hljs-number">1000</span> -SymbolTimeframeConvention SQ
-</code></pre>
-<p>Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000. SQ naming convention will be used for instruments (MS_M30 instead of MFG convention MS_30M. Default is MFG convention)</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 <span class="hljs-keyword">MS</span> <span class="hljs-title">-InitialCapital</span> <span class="hljs-number">10000</span> -Drawdown <span class="hljs-number">2000</span> -MaxStrategies <span class="hljs-number">1000</span> -SymbolTimeframeConvention SQ -CorrelatedSymbolTimeframe M15 -UnCorrelatedSymbolTimeframe H1
-</code></pre>
-<p>Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000. Overrides correlated symbol timeframe to M15 and uncorrelated to H1. Default is M30</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-InitializeWorkflow -InstrumentToMine GS -Correlated_1 JPM -Correlated_2 <span class="hljs-keyword">MS</span> <span class="hljs-title">-InitialCapital</span> <span class="hljs-number">10000</span> -Drawdown <span class="hljs-number">2000</span> -MaxStrategies <span class="hljs-number">1000</span> -SymbolTimeframeConvention SQ -CorrelatedSymbolTimeframe M15 -UnCorrelatedSymbolTimeframe H1 -UnCorrelatedSymbol RBLX
-</code></pre>
-<p>Explanation: You would like to mine GS and run correlation on JPM and MS. The max strategies you want to generate are 1000. You want to set your initial capital to 10,000 with a max drawdown of 2,000. Overrides correlated symbol timeframe to M15 and uncorrelated to H1. Default is M30. Overrides Uncorrelated symbol to RBLX, default is GLD</p>
-<hr>
-<pre><code class="lang-sh">mine -<span class="hljs-built_in">Help</span>
-</code></pre>
-<p>Prints command usage</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-attribute">mine -Upgrade</span>
-</code></pre>
-<p>Upgrades powershell module to latest</p>
-<hr>
-<pre><code class="lang-sh">Restore-Databanks -<span class="hljs-built_in">Symbol</span> AAPL
-</code></pre>
-<p>Explanation: If for some unknown reasons SQ deletes the databank results, you can restore them to original location if you are using standard workflow template that stores results after each task under C:\Algos\SQ\MFG-Results. If you don&#39;t specify any parameter, it will restore results for all symbols under C:\Algos\SQ\MFG-Results.</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-string">"SQ"</span>, <span class="hljs-string">"RBLX"</span>, <span class="hljs-string">"NVDA"</span>, <span class="hljs-string">"SOFI"</span> <span class="hljs-string">| mine -Correlated_1 FB -Correlated_2 AAPL -BacktestTimeframe D1 -AlternateTimeframe H4</span>
-</code></pre>
-<p>Explanation: You would like to create a workflow for SQ, RBLX, NVDA and SOFI. All of them will use FB and APPL for correlated symbols. BacktestTimeframe will be D1 and AlternateTimeframe will be H4</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-selector-tag">Mine-Common</span> <span class="hljs-selector-tag">-InstrumentToMine</span> <span class="hljs-selector-tag">SHOP</span> <span class="hljs-selector-tag">-FullDurationStartDate</span> 2015<span class="hljs-selector-class">.05</span><span class="hljs-selector-class">.21</span>
-</code></pre>
-<p>Explanation: Generates .cfx file for M30, D1 and H1</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-selector-tag">Mine-D1</span> <span class="hljs-selector-tag">-InstrumentToMine</span> <span class="hljs-selector-tag">TSLA</span> –<span class="hljs-selector-tag">FullDurationStartDate</span> 2010<span class="hljs-selector-class">.06</span><span class="hljs-selector-class">.29</span>
-</code></pre>
-<p>Explanation: Generates .cfx file w/ D1 as backtest timeframe and H4 alternate timeframe</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-selector-tag">Mine-M30</span> <span class="hljs-selector-tag">-InstrumentToMine</span> <span class="hljs-selector-tag">TSLA</span> –<span class="hljs-selector-tag">FullDurationStartDate</span> 2010<span class="hljs-selector-class">.06</span><span class="hljs-selector-class">.29</span>
-</code></pre>
-<p>Explanation: Generates .cfx file w/ M30 as backtest timeframe and H1 alternate timeframe</p>
-<hr>
-<pre><code class="lang-sh">Mine -InstrumentToMine TSLA –FullDurationStartDate <span class="hljs-number">2010.06</span><span class="hljs-number">.29</span> -AverageTradesPerYear <span class="hljs-number">100</span> AverageTrade <span class="hljs-number">100</span>
-</code></pre>
-<p>Explanation: To override Average Trades Per Year and Average Trades</p>
-<hr>
-<pre><code class="lang-sh">SQ-<span class="hljs-built_in">List</span>-Symbols
-</code></pre>
-<p>Lists all the symbols and its metadata from your SQ.</p>
-<hr>
-<pre><code class="lang-sh">SQ-Generate-Workflow-Command -<span class="hljs-built_in">Symbol</span> TSLA
-</code></pre>
-<p>Generates workflow command based on backtest timeframe in SQ. If you don&#39;t specify -Symbol, it will pull all symbols from SQ</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-attribute">Mine -InstrumentToMine TSLA -GetBacktestTimeframeFromSQ</span>
-</code></pre>
-<p>Gets the backtest start date from SQ to generate the workflow</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-attribute">Get-MFG-Configuration</span>
-</code></pre>
-<p>Displays your MFG configuration settings.</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-keyword">Set</span>-MFG-Configuration
-</code></pre>
-<p>You can set your MFG configuration with this command. It has parameters for -SQPath -TradeStationDataPath -WorkflowResultsPath and -UpgradeURL.</p>
-<p>You might want to set your Trade Station Path where you save .csv files, like this Set-MFG-Configuration -TradeStationDataPath &quot;C:\TradeStation\Data&quot;</p>
-<p>If you run it without passing any parameters, it will restore all settings to default.</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-symbol">Mine</span>-<span class="hljs-meta">Common</span> -InstrumentToMine TSLA -GetBacktestTimeframeFromTradeStationFile
-</code></pre>
-<p>Gets the starting date of backtest from the .csv file for TSLA. You need to set your folder path where you save .csv files to make this work. See this command Set-MFG-Configuration above</p>
-<hr>
-<pre><code class="lang-sh">Clear-Databanks (<span class="hljs-name">to</span> speed up SQ)
-</code></pre>
-<p>Removes everything except Recency and Final results stored by SQ under C:\StrategyQuantX\user\projects. Note, if you plan to use this command, make sure to backup your data before running this command. The template I am using, that comes with the powershell commands saves everything (results) under C:\Algos\SQ\MFG-Results Therefore, it is perfectly fine for me to delete SQ folders. I only keep Final and Recency so UI can give me a clue if project has been mined already or not. To get the command use mine -upgrade Backup data before using this command</p>
-<hr>
-<pre><code class="lang-sh">TD-MFG-Test-Workflow -Symbol_1 AAPL -Symbol_2 TSLA -Symbol_3 <span class="hljs-keyword">SHOP </span>-Symbol_4 ARKK -Symbol_5 IHI -TestDurationInMinutes <span class="hljs-number">5</span> -<span class="hljs-keyword">BacktestTimeframe </span>H1
-</code></pre>
-<p>Generates workflow w/ AAPL, TSLA, SHOP, ARKK and IHI. Test will run for TestDurationInMinutes</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-attribute">Daily-Update</span>
-</code></pre>
-<p>Run this as Administrator in Powershell ISE to setup a windows scheduled task that will download latest powershell modules daily</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-symbol">SQ</span>-<span class="hljs-meta">Import</span>-Symbols
-</code></pre>
-<p>Imports symbols and data from Trade Station directory. If no parameter is specified will load all symbols and its data to SQ.</p>
-<p>If you want to limit it to specific symbol run it as SQ-Import-Symbols -Symbol AAPL -Instrument &quot;Standard stock&quot;</p>
-<p>To set Trade Station directory use Set-MFG-Configuration -TradeStationDataPath &quot;Your TS Data folder where you keep .csv&quot;</p>
-<hr>
-<pre><code class="lang-sh"><span class="hljs-symbol">SQ</span>-<span class="hljs-meta">Export</span>-Projects
-</code></pre>
-<p>Exports projects from SQ and saves them as .CFX files on your local machine</p>
-<hr>
-<h2 id="frequently-used-command">Frequently used command</h2>
-<pre><code class="lang-sh"><span class="hljs-symbol">Mine</span>-<span class="hljs-meta">Common</span> -InstrumentToMine TSLA -GetBacktestTimeframeFromTradeStationFile
-</code></pre>
-<p>Explanation: </p>
-<ul>
-<li>Creates three workflows. H1/M30, D1/H4 and M30/H1 for TSLA</li>
-<li>Gets the back test start date from Trade Station .csv file (less typing is better)</li>
-<li>Uses AAPL and FB as Correlated symbols. You can override them if you want with Correlated_1 and Correlated_2</li>
-<li>Uses defaults for Drardown, InitialCapital, Average Trades, Average Trades Per Year etc. but if you like to override them use addtional switches</li>
-</ul>
-<hr>
+
+
 </div>

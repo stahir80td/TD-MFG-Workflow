@@ -33,6 +33,13 @@ namespace FolderExplorer.Controllers
             return View();
         }
 
+        public IActionResult Documentation()
+        {
+            ViewData["Message"] = "Your application description page.";
+
+            return View();
+        }
+
         [Authorize]
         public IActionResult Contact()
         {
