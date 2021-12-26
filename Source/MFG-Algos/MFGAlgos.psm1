@@ -224,7 +224,7 @@ function SQ-Import-Projects($FolderWithCFXFiles = "C:\Algos\SQ\MFG-Results\SQPro
     $files = Get-ChildItem "$FolderWithCFXFiles" -Recurse -Include *.cfx
     foreach($file in $files)
     {
-        "-project action=loadconfig name=""$($file.Name)"" file=""$($file.FullName)""" | Add-Content "$commandFile"
+        "-project action=loadconfig name=""$($file.Name.Split(".")[0])"" file=""$($file.FullName)""" | Add-Content "$commandFile"
     }
 
     Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
@@ -859,6 +859,21 @@ function Algo-CreateWorkspace($stock, $BacktestTimeframe = "H1")
     md "$rootPath\Results_$BacktestTimeframe" -Force -ea SilentlyContinue
     
 
+}
+
+function Algo-Create-IncubationWorkspace($Folder)
+{
+    Write-Host "Creating workspace..." -ForegroundColor Green
+
+    $config = Load-MFG-Config
+    $rootPath = "$($config.MFGConfig.WorkflowResultsPath)"
+    
+    $rootPath = Join-Path $rootPath $Folder
+
+    md $rootPath -Force -ea SilentlyContinue
+
+    md "$rootPath\Results" -Force -ea SilentlyContinue
+    md "$rootPath\ManualReview" -Force -ea SilentlyContinue
 }
 
 
@@ -1540,6 +1555,182 @@ function TD-MFG-InitializeWorkflow(
     END {}
 }
 
+function TD-MFG-Incubation-Workflow(
+    [Parameter(ValueFromPipeline = $true)]
+    [string[]]
+    $InstrumentToMine = "AAPL", 
+    $Correlated_1 = "FB", 
+    $Correlated_2 = "AAPL", 
+    $InitialCapital = "25000", 
+    $Drawdown = "5000", 
+    $MaxStrategies = "1500", 
+    $FullDurationStartDate="2000.01.01", 
+    $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $BacktestTimeframe = "H1",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $AlternateTimeframe = "M30",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $CorrelatedSymbolTimeframe = "M30",
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $UnCorrelatedSymbolTimeframe = "M30",
+    $Session = "No Session",
+    [ValidateSet("SQ", "MFG")]
+    [string]
+    $SymbolTimeframeConvention = "MFG",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Help,
+    $UnCorrelatedSymbol = "GLD",
+    [Parameter(Mandatory=$false)]
+    [Switch]$Upgrade,
+    $AverageTradesPerYear = "15",
+    $AverageTrade = "95",
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromSQ,
+    [Parameter(Mandatory=$false)]
+    [Switch]$GetBacktestTimeframeFromTradeStationFile,
+    [Parameter(Mandatory=$false)]
+    [Switch]$UpdateUserSettings
+    )
+{
+    BEGIN {}
+	PROCESS
+	{
+        $InSampleStartDate = ""
+        $RecencyStartDate  = ""
+        $RecencyEndDate = ""
+        $OutOfSampleStartDate = ""
+
+        if($Help -eq $true)
+        {
+            return Print-HelpContent
+        }
+
+        if($Upgrade -eq $true)
+        {
+            Upgrade-Module -UpdateUserSettings:$UpdateUserSettings
+            Write-Host "`nPackage has been upgraded. Run following command" -ForegroundColor Green
+            Write-Host "`nImport-Module '$($PSScriptRoot)\MFGAlgos.psm1' -force -DisableNameChecking" -ForegroundColor Cyan
+            return
+        }
+
+        if($GetBacktestTimeframeFromSQ -eq $true)
+        {
+            Write-Host "Attmpting to get Backtest Start Date from SQ...." -ForegroundColor Green
+            $FullDurationStartDate =  Get-BackTestTimeframeFromSQ -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate
+        }
+
+        if($GetBacktestTimeframeFromTradeStationFile -eq $true)
+        {
+            Write-Host "Attmpting to get Backtest Start Date from Trade Station File...." -ForegroundColor Green
+            $FullDurationStartDate =  TS-Get-Symbol-StartingDate -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate
+        }
+        
+        try{
+            if($FullDurationEndDate.GetType().Name -eq "String")
+            {
+                $FullDurationEndDate = [datetime]::parseexact($FullDurationEndDate, "yyyy.MM.dd", $null)
+            }
+        
+            $ts = New-TimeSpan -Start $FullDurationStartDate -End $FullDurationEndDate
+            $backtestDuration = [math]::Round(.7 * $ts.Days)
+            $InSampleDuration = [math]::Round(.4 * $ts.Days) 
+            
+            $startingDateFormat = [datetime]::parseexact($FullDurationStartDate, "yyyy.MM.dd", $null)
+            $backTestEnds = $startingDateFormat.AddDays($backtestDuration)
+            $OutOfSampleStartDate = $startingDateFormat.AddDays($InSampleDuration)
+
+            "Backtest start date: $($startingDateFormat.ToString("yyyy.MM.dd"))"
+            "Backtest end date: $($backTestEnds.ToString("yyyy.MM.dd"))"
+            "Out Of Sample start date: $($OutOfSampleStartDate.ToString("yyyy.MM.dd"))"
+            "Recency start date: $($backTestEnds.ToString("yyyy.MM.dd"))"
+            "Recency end date: $($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+            "Full duration start date: $($startingDateFormat.ToString("yyyy.MM.dd"))"
+            "Full duration end date: $($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+
+            $InSampleStartDate = "$($startingDateFormat.ToString("yyyy.MM.dd"))"
+            $RecencyStartDate  = "$($backTestEnds.ToString("yyyy.MM.dd"))"
+            $RecencyEndDate = "$($FullDurationEndDate.ToString("yyyy.MM.dd"))"
+            $OutOfSampleStartDate = "$($OutOfSampleStartDate.ToString("yyyy.MM.dd"))"
+
+        }
+        catch
+        {
+            Write-Host "Please enter date in correct format yyyy.MM.dd Example: 2021.04.21" -ForegroundColor Red
+            Write-Host "$_" -ForegroundColor DarkYellow
+            return
+        }
+
+        foreach($instrument in $InstrumentToMine)
+        {
+
+            $BTF = Get-SymbolTimeframe -timeframe $BacktestTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+            $ATF = Get-SymbolTimeframe -timeframe $AlternateTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+            $CTF = Get-SymbolTimeframe -timeframe $CorrelatedSymbolTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+            $UTF = Get-SymbolTimeframe -timeframe $UnCorrelatedSymbolTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+    
+            $config = "$PSScriptRoot\config.xml"
+
+            $MFGconfig = Load-MFG-Config
+            $SaveFileToPath = "$($MFGconfig.MFGConfig.WorkflowResultsPath)"
+            
+            $rootFolder = "$SaveFileToPath\$instrument"
+
+            Algo-CreateWorkspace -stock $instrument -BacktestTimeframe "$BacktestTimeframe"
+
+            copy-item -Path $config -Destination "$rootFolder\config.xml"
+
+            $newConfigFilePath = "$rootFolder\config.xml"
+
+            Write-Host "Replacing placeholders..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[UL_Stock]', "$instrument").replace('[UC_Stock]', "$UnCorrelatedSymbol").replace('[Correlated_1]', "$Correlated_1").replace('[Correlated_2]', "$Correlated_2").replace('[Drawdown]', "$Drawdown").replace('[InitialCapital]', "$InitialCapital").replace('[MaxStrategies]', "$MaxStrategies") | Set-Content $newConfigFilePath -Force
+    
+            Write-Host "Updating folder paths for 'Save file' tasks..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[ResultsFolder]', "$rootFolder\Results_$BacktestTimeframe").replace('[SPPFolder]', "$rootFolder\SPP_$BacktestTimeframe").replace('[RecencyFolder]', "$rootFolder\Recency_$BacktestTimeframe").replace('[MCFolder]', "$rootFolder\MC_$BacktestTimeframe").replace('[FulltimespanFolder]', "$rootFolder\Full time span_$BacktestTimeframe").replace('[FinalFolder]', "$rootFolder\Final_$BacktestTimeframe").replace('[CorrelatedFolder]', "$rootFolder\Correlated_$BacktestTimeframe").replace('[AlternatetimeframeFolder]', "$rootFolder\Alternate timeframe_$BacktestTimeframe")  | Set-Content $newConfigFilePath -Force
+    
+            Write-Host "Updating IS, OS and Recency dates..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[IS_StartDate]', "$InSampleStartDate").replace('[Recency_Start_Date]',"$RecencyStartDate").replace('[Recency_End_Date]',"$RecencyEndDate").replace('[OS_Start_Date]',"$OutOfSampleStartDate") | Set-Content $newConfigFilePath -Force
+
+            Write-Host "Replacing timeframes..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[ATF]', "$ATF").replace('[UTF]', "$UTF").replace('[CTF]', "$CTF").replace('[TF]',"$BTF").replace('[BacktestTimeframe]',"$BacktestTimeframe").replace('[AlternateTimeframe]',"$AlternateTimeframe") | Set-Content $newConfigFilePath -Force
+
+            Write-Host "Replacing session..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[NoSession]', "$Session") | Set-Content $newConfigFilePath -Force
+
+            Write-Host "Replacing average trades..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[AvgTradesPerYear]', "$AverageTradesPerYear").replace('[AvgTrade]', "$AverageTrade") | Set-Content $newConfigFilePath -Force
+
+            Write-Host "Packaging workflow..." -ForegroundColor Green
+
+            $7zipPath = "$PSScriptRoot\7z.exe"
+
+            if (-not (Test-Path -Path $7zipPath -PathType Leaf)) {
+                throw "7 zip file $($7zipPath) not found. Please install 7-zip at this path: $PSScriptRoot from this website and then retry: https://www.7-zip.org/download.html"
+            }
+
+            $Target = "$rootFolder\MFG-$Instrument-$BacktestTimeframe.cfx"
+
+            Set-Alias 7zip "$7zipPath"
+
+            7zip a -tzip "$($Target)" "$newConfigFilePath"
+
+            Write-Host "Wooho! workflow file has been created. Check the workflow file at path: $Target" -ForegroundColor Green
+        }
+    }
+
+    END {}
+}
+
 <#
     .DESCRIPTION
         Generates workflow w/ five symbols to quickly validate if we see some strategies
@@ -1748,10 +1939,113 @@ function TD-MFG-Test-Workflow(
     END {}
 }
 
+function Create-IncubationWorkSpace()
+{
+    $config = "$PSScriptRoot\IncubationReview.xml"
+
+    $MFGconfig = Load-MFG-Config
+    $SaveFileToPath = "$($MFGconfig.MFGConfig.WorkflowResultsPath)"
+            
+    $rootFolder = "$workflowResultsFolder\IncubationReview"
+
+    Algo-Create-IncubationWorkspace -Folder "IncubationReview"
+
+    copy-item -Path $config -Destination "$rootFolder\config.xml"
+
+    $newConfigFilePath = "$rootFolder\config.xml"
+   
+    Write-Host "Updating folder paths for 'Save file' tasks..." -ForegroundColor Green
+
+    (gc $newConfigFilePath).replace('[SaveResults]', "$rootFolder\Results").replace('[SaveReview]', "$rootFolder\ManualReview") | Set-Content $newConfigFilePath -Force
+    
+    $7zipPath = "$PSScriptRoot\7z.exe"
+
+    if (-not (Test-Path -Path $7zipPath -PathType Leaf)) {
+        throw "7 zip file $($7zipPath) not found. Please install 7-zip at this path: $PSScriptRoot from this website and then retry: https://www.7-zip.org/download.html"
+    }
+
+    $Target = "$rootFolder\IncubationReview.cfx"
+
+    Set-Alias 7zip "$7zipPath"
+
+    7zip a -tzip "$($Target)" "$newConfigFilePath"
+
+    Write-Host "Wooho! workflow file has been created. Check the workflow file at path: $Target" -ForegroundColor Green
+}
+
+<#
+    .DESCRIPTION
+        Creates IncubationReview Workflow
+        Imports a new Project named IncubationReview to SQ
+        Creates two databanks - Results and Manual Review
+        Collects strategies from Final* folder that exist under WorkflowResultsPath (See Get-MFG-Configuration for details). This folder is generally pointing to C:\Algos\SQ\MFG-Results
+        Final Strategies are added to Results databank. Strategy Name is modified to add Symbol and Timeframe to it so it is easy to identify where we copied the strategy from
+        Make sure SQ UI is closed when you run this
+
+        
+    .EXAMPLE
+        Collect-Strategies-For-Incubation-Review
+#>
+function Collect-Strategies-For-Incubation-Review()
+{
+    $config = Load-MFG-Config
+    $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
+    $SQPath = "$($config.MFGConfig.SQPath)"
+    $SQDatabankFolder = "$($config.MFGConfig.SQPath)\user\projects\IncubationReview\databanks\Results"
+
+    $rootFolder = "$workflowResultsFolder\IncubationReview"
+   
+    Create-IncubationWorkSpace
+
+    $dirs = Get-ChildItem -Directory -Recurse  "$workflowResultsFolder" | where {$_.Name -like "*Final*"}
+
+    foreach($dir in $dirs)
+    {
+        $files = Get-ChildItem  "$($dir.FullName)" -Include *.sqx -Recurse
+
+        foreach($file in $files)
+        {
+            $Directory = "$($file.Directory.Name)"
+            $Parent = "$($file.Directory.Parent.Name)"
+            Copy-Item -Path "$($file.FullName)" -Destination "$rootFolder\$($Parent)_$($Directory)_$($file.Name)" -Verbose
+        }
+    }
+
+    Write-Host "Getting list of projects from SQ..." -ForegroundColor Green
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-project action=list"
+
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$anotherInstance"
+        return
+    }
+
+    $projects = $response.Where({ $_ -like "*List of available projects*" },'SkipUntil') | select -Skip 2
+
+    if($($projects | where {$_-eq "IncubationReview"}) -ne $null)
+    {
+        Write-Error "There is already a project named IncubationReview in SQ. Please remove that project and try again. Make sure to save any strategies in Manual Review before you remove the project."
+        return
+    }
+
+    SQ-Import-Projects -FolderWithCFXFiles "$rootFolder"
+
+    md "$SQDatabankFolder" -Force -ea SilentlyContinue
+
+    Copy-Item -Path "$rootFolder\*" -Destination "$SQDatabankFolder" -Force -verbose
+
+
+}
+
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
 New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
