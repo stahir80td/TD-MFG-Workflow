@@ -383,7 +383,7 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
             Write-Host "Importing $($file.FullName) ...."
 
             $Command = "$SQPath\sqcli.exe"
-            $Parms = "-data action=import symbol=$($file.Name.Split(".")[0]) instrument=""$($Instrument)"" filepath=""$($file.FullName)"" timezone=""EETUS"""
+            $Parms = "-data action=import bartype=endofbar symbol=$($file.Name.Split(".")[0]) instrument=""$($Instrument)"" filepath=""$($file.FullName)"" timezone=""EETUS"""
             $Parms | Add-Content -Path "$commandFile"
         }
     }
@@ -495,7 +495,7 @@ function SQ-Generate-Workflow-Command($Symbol = "All")
     }
 }
 
-function TS-Get-Symbol-StartingDate($FullDurationStartDate, $Symbol)
+function TS-Get-Symbol-StartingDate($FullDurationStartDate, $Symbol, $BTF)
 {
     $config = Load-MFG-Config
     $TSDataPath = "$($config.MFGConfig.TSDataPath)"
@@ -505,11 +505,11 @@ function TS-Get-Symbol-StartingDate($FullDurationStartDate, $Symbol)
         Write-Error "Your Trade Station Data path $TSDataPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
     }
     
-    $files = Get-ChildItem "$TSDataPath\*.csv"
+    $files = Get-ChildItem "$TSDataPath\*.csv" 
 
     foreach($file in $files)
     {
-        if("$($file.Name.Split("_")[0])" -eq "$Symbol")
+        if("$($file.Name.Split("_")[0])" -eq "$Symbol" -and $($file.Name) -like "*$($BTF)*")
         {
             $startingDate = "$((gc $file)[1].Split(",")[0])"
             
@@ -811,7 +811,7 @@ function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected=
 
 <#
     .DESCRIPTION
-        Removes everything except Recency and Final results stored by SQ under C:\StrategyQuantX\user\projects. 
+        Removes everything except Recency Final and Incubate results stored by SQ under C:\StrategyQuantX\user\projects. 
         Note, if you plan to use this command, make sure to backup your data before running this command. 
         The template I am using, that comes with the powershell commands saves everything (results) under C:\Algos\SQ\MFG-Results 
         Therefore, it is perfectly fine for me to delete SQ folders. 
@@ -831,7 +831,7 @@ function Clear-Databanks()
 
         Get-ChildItem -Path "$SQProjectsFolder" -Recurse -exclude Results -Include *.sqx |
         Select -ExpandProperty FullName |
-        Where {$_ -notlike '*Final*' -and $_ -notlike '*Recency*'} |
+        Where {$_ -notlike '*Final*' -and $_ -notlike '*Recency*' -and $_ -notlike '*Incubate*'} |
         Remove-Item -force
 
     }
@@ -873,6 +873,7 @@ function Algo-Create-IncubationWorkspace($Folder)
     md $rootPath -Force -ea SilentlyContinue
 
     md "$rootPath\Results" -Force -ea SilentlyContinue
+    md "$rootPath\Incubation" -Force -ea SilentlyContinue
     md "$rootPath\ManualReview" -Force -ea SilentlyContinue
 }
 
@@ -1450,8 +1451,10 @@ function TD-MFG-InitializeWorkflow(
 
         if($GetBacktestTimeframeFromTradeStationFile -eq $true)
         {
-            Write-Host "Attmpting to get Backtest Start Date from Trade Station File...." -ForegroundColor Green
-            $FullDurationStartDate =  TS-Get-Symbol-StartingDate -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate
+            $BTF = Get-SymbolTimeframe -timeframe $BacktestTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+
+            Write-Host "Attmpting to get Backtest Start Date from Trade Station File....for BTF: $BTF" -ForegroundColor Green
+            $FullDurationStartDate =  TS-Get-Symbol-StartingDate -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate -BTF $BTF
         }
         
         try{
@@ -2042,10 +2045,37 @@ function Collect-Strategies-For-Incubation-Review()
 
 }
 
+function Copy-Mined-Results-From-Incubation()
+{
+    $config = Load-MFG-Config
+    $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
+    $SQPath = "$($config.MFGConfig.SQPath)"
+
+    $rootFolder = "$workflowResultsFolder\IncubationReview\Incubation"
+   
+    Create-IncubationWorkSpace
+
+    $dirs = Get-ChildItem -Directory -Recurse  "$SQPath" | where {$_.Name -like "*Incubate*"}
+
+    foreach($dir in $dirs)
+    {
+        $files = Get-ChildItem  "$($dir.FullName)" -Include *.sqx -Recurse
+
+        foreach($file in $files)
+        {
+            $Directory = "$($file.Directory.Name)"
+            $Parent = "$($file.Directory.Parent.Name)"
+            Copy-Item -Path "$($file.FullName)" -Destination "$rootFolder\$($Parent)_$($Directory)_$($file.Name)".Replace("databanks_Incubate_","") -Verbose
+        }
+    }
+
+}
+
+
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
 New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
