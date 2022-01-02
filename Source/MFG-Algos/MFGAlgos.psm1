@@ -1045,6 +1045,13 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
                                -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
 
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H4 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+
 }
 
 <#
