@@ -2072,10 +2072,52 @@ function Copy-Mined-Results-From-Incubation()
 }
 
 
+function QA-Fix-Date-Format($filePath)
+{
+
+    $p = import-csv "$filePath"
+
+    $p | foreach{
+
+        $closeTime = $_.'Close time'
+        $openTime = $_.'Open Time'
+
+        $closeTimeGlobal = $_.'Close time (Global)'
+        $openTimeGlobal = $_.'Open time (Global)'
+
+        if($closeTime)
+        {
+            $original = [datetime]::parseexact($closeTime, "dd.MM.yyyy HH:mm:ss", $null)
+            $_.'Close time' = $original.ToString("MM/dd/yyyy HH:mm K")
+        }
+        
+        if($openTime)
+        {
+            $original = [datetime]::parseexact($openTime, "dd.MM.yyyy HH:mm:ss", $null)
+            $_.'Open Time' = $original.ToString("MM/dd/yyyy HH:mm K")
+        }
+
+        if($closeTimeGlobal)
+        {
+            $original = [datetime]::parseexact($closeTimeGlobal, "dd.MM.yyyy HH:mm:ss", $null)
+            $_.'Close time (Global)' = $original.ToString("MM/dd/yyyy HH:mm K")
+        }
+        
+        if($openTimeGlobal)
+        {
+            $original = [datetime]::parseexact($openTimeGlobal, "dd.MM.yyyy HH:mm:ss", $null)
+            $_.'Open time (Global)' = $original.ToString("MM/dd/yyyy HH:mm K")
+        }
+    }
+
+    $p | Export-Csv "$filePath"
+
+}
+
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
 New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
