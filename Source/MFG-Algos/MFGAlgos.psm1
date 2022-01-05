@@ -1019,7 +1019,10 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
-    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    [Switch]$GetBacktestTimeframeFromTradeStationFile,
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $TradeStationFileTimeFrame = "H1"
     )
 
 {
@@ -1029,28 +1032,28 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H1 -AlternateTimeframe M30 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H4 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
 }
 
@@ -1158,7 +1161,10 @@ function TD-MFG-InitializeWorkflow-M30
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
-    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    [Switch]$GetBacktestTimeframeFromTradeStationFile,
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $TradeStationFileTimeFrame = "H1"
     )
 
 {
@@ -1168,7 +1174,7 @@ function TD-MFG-InitializeWorkflow-M30
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
     
 
@@ -1276,7 +1282,10 @@ function TD-MFG-InitializeWorkflow-D1
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
-    [Switch]$GetBacktestTimeframeFromTradeStationFile
+    [Switch]$GetBacktestTimeframeFromTradeStationFile,
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $TradeStationFileTimeFrame = "H1"
     )
 
 {
@@ -1286,7 +1295,7 @@ function TD-MFG-InitializeWorkflow-D1
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
 
 }
 
@@ -1426,7 +1435,10 @@ function TD-MFG-InitializeWorkflow(
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [Parameter(Mandatory=$false)]
-    [Switch]$UpdateUserSettings
+    [Switch]$UpdateUserSettings,
+    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [string]
+    $TradeStationFileTimeFrame = "H1"
     )
 {
     BEGIN {}
@@ -1458,7 +1470,7 @@ function TD-MFG-InitializeWorkflow(
 
         if($GetBacktestTimeframeFromTradeStationFile -eq $true)
         {
-            $BTF = Get-SymbolTimeframe -timeframe $BacktestTimeframe -SymbolTimeframeConvention $SymbolTimeframeConvention
+            $BTF = Get-SymbolTimeframe -timeframe $TradeStationFileTimeFrame -SymbolTimeframeConvention $SymbolTimeframeConvention
 
             Write-Host "Attmpting to get Backtest Start Date from Trade Station File....for BTF: $BTF" -ForegroundColor Green
             $FullDurationStartDate =  TS-Get-Symbol-StartingDate -Symbol $InstrumentToMine -FullDurationStartDate $FullDurationStartDate -BTF $BTF
