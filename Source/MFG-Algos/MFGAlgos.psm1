@@ -42,39 +42,269 @@ function Daily-Update()
     $time = Get-Random -Minimum 1 -Maximum 11
 
     $trigger = New-ScheduledTaskTrigger -Daily -At "$($time)pm"
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UpdateMFGModules" -Description "Updated MSG Powershell Modules" -User "System" -Verbose -TaskPath '\MFG\' 
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UpdateMFGModules" -Description "Updated MSG Powershell Modules" -User "System" -Verbose -TaskPath '\MFG\'
 }
+
+<#
+    .DESCRIPTION
+        This commands sets up a Windows scheduled task to test if Ninja Trader, Trade Station and Think or Swim are running on the box. You will get a text message if platform is not running. See Set-MFG-Configuration command to set your email account, smtp server, cell phone details etc.
+
+    .SYNOPSIS
+
+    .EXAMPLE
+        TradingPlatform-Update
+#>
+function TradingPlatform-Update()
+{
+    $scheduleObject = New-Object -ComObject schedule.service
+    $scheduleObject.connect()
+    $rootFolder = $scheduleObject.GetFolder("\")
+    try{$rootFolder.CreateFolder("MFG") } catch{}
+
+    ipmo ScheduledTasks
+
+    $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-WindowStyle Hidden Check-TradingPlatforms -NoAudio"
+
+    $time = Get-Random -Minimum 1 -Maximum 11
+
+    $trigger = New-ScheduledTaskTrigger `
+    -Once `
+    -At (Get-Date) `
+    -RepetitionInterval (New-TimeSpan -Minutes 5) `
+    -RepetitionDuration (New-TimeSpan -Days (365 * 20))
+
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CheckTradingPlatforms" -Description "Check Trading Platforms" -User "System" -Verbose -TaskPath '\MFG\' | Start-ScheduledTask
+}
+
 
 function Load-MFG-Config()
 {
     Get-MFG-Configuration | Out-String | ConvertFrom-Json
 }
 
+function Get-ProviderExtension([ValidateSet("River Wireless","Alltel","AT&T","ACS Wireless","Blue Sky Frog","Bluegrass Cellular","Boost Mobile","BPL Mobile","Carolina West Wireless","Cellular One","Cellular South","Centennial Wireless","CenturyTel","Cingular","Clearnet","Comcast","Corr Wireless Communications","Dobson","Edge Wireless","Golden Telecom","Helio","Houston Cellular","Illinois Valley Cellular","Inland Cellular Telephone","Idea Cellular","MCI","Metrocall","Metrocall 2-way","Metro PCS","Microcell","Midwest Wireless","Mobilcomm","MTS","Nextel","OnlineBeep","Public Service Cellular","PCS One","Qwest","Rogers AT&T Wireless","Satellink","Southwestern Bell","Sprint","Sumcom","Surewest Communicaitons","Sumcom","Sprint","Surewest Communicaitons","T-Mobile","Tracfone","Triton","Unicel","US Cellular","US West","Virgin Mobile","Virgin Mobile Canada","Verizon","Western Wireless","West Central Wireless")]
+    [string]
+    $Provider
+    )
+{
+
+$providers = @"
+
+[
+{"provider":"3 River Wireless", "extension":"@sms.3rivers.net"},
+{"provider":"Alltel", "extension":"@message.alltel.com"},
+{"provider":"AT&T", "extension":"@txt.att.net"},
+{"provider":"ACS Wireless", "extension":"@paging.acswireless.com"},
+{"provider":"Blue Sky Frog", "extension":"@blueskyfrog.com"},
+{"provider":"Bluegrass Cellular", "extension":"@sms.bluecell.com"},
+{"provider":"Boost Mobile", "extension":"@myboostmobile.com"},
+{"provider":"BPL Mobile", "extension":"@bplmobile.com"},
+{"provider":"Carolina West Wireless", "extension":"@cwwsms.com"},
+{"provider":"Cellular One", "extension":"@mobile.celloneusa.com"},
+{"provider":"Cellular South", "extension":"@csouth1.com"},
+{"provider":"Centennial Wireless", "extension":"@cwemail.com"},
+{"provider":"CenturyTel", "extension":"@messaging.centurytel.net"},
+{"provider":"Cingular", "extension":"@txt.att.net"},
+{"provider":"Clearnet", "extension":"@msg.clearnet.com"},
+{"provider":"Comcast", "extension":"@comcastpcs.textmsg.com"},
+{"provider":"Corr Wireless Communications", "extension":"@corrwireless.net"},
+{"provider":"Dobson", "extension":"@mobile.dobson.net"},
+{"provider":"Edge Wireless", "extension":"@sms.edgewireless.com"},
+{"provider":"Golden Telecom", "extension":"@sms.goldentele.com"},
+{"provider":"Helio", "extension":"@messaging.sprintpcs.com"},
+{"provider":"Houston Cellular", "extension":"@text.houstoncellular.net"},
+{"provider":"Illinois Valley Cellular", "extension":"@ivctext.com"},
+{"provider":"Inland Cellular Telephone", "extension":"@inlandlink.com"},
+{"provider":"Idea Cellular", "extension":"@ideacellular.net"},
+{"provider":"MCI", "extension":"@pagemci.com"},
+{"provider":"Metrocall", "extension":"@page.metrocall.com"},
+{"provider":"Metrocall 2-way", "extension":"@my2way.com"},
+{"provider":"Metro PCS", "extension":"@mymetropcs.com"},
+{"provider":"Microcell", "extension":"@fido.ca"},
+{"provider":"Midwest Wireless", "extension":"@clearlydigital.com"},
+{"provider":"Mobilcomm", "extension":"@mobilecomm.net"},
+{"provider":"MTS", "extension":"@text.mtsmobility.com"},
+{"provider":"Nextel", "extension":"@messaging.nextel.com"},
+{"provider":"OnlineBeep", "extension":"@onlinebeep.net"},
+{"provider":"Public Service Cellular", "extension":"@sms.pscel.com"},
+{"provider":"PCS One", "extension":"@pcsone.net"},
+{"provider":"Qwest", "extension":"@qwestmp.com"},
+{"provider":"Rogers AT&T Wireless", "extension":"@pcs.rogers.com"},
+{"provider":"Satellink .pageme@satellink.net"},
+{"provider":"Southwestern Bell", "extension":"@email.swbw.com"},
+{"provider":"Sprint", "extension":"@messaging.sprintpcs.com"},
+{"provider":"Sumcom", "extension":"@tms.suncom.com"},
+{"provider":"Surewest Communicaitons", "extension":"@mobile.surewest.com"},
+{"provider":"Sumcom", "extension":"@tms.suncom.com"},
+{"provider":"Sprint", "extension":"@messaging.sprintpcs.com"},
+{"provider":"Surewest Communicaitons", "extension":"@mobile.surewest.com"},
+{"provider":"T-Mobile", "extension":"@tmomail.net"},
+{"provider":"Tracfone", "extension":"@txt.att.net"},
+{"provider":"Triton", "extension":"@tms.suncom.com"},
+{"provider":"Unicel", "extension":"@utext.com"},
+{"provider":"US Cellular", "extension":"@email.uscc.net"},
+{"provider":"US West", "extension":"@uswestdatamail.com"},
+{"provider":"Virgin Mobile", "extension":"@vmobl.com"},
+{"provider":"Virgin Mobile Canada", "extension":"@vmobile.ca"},
+{"provider":"Verizon", "extension":"@vtext.com"},
+{"provider":"Western Wireless", "extension":"@cellularonewest.com"},
+{"provider":"West Central Wireless", "extension":"@sms.wcc.net"}
+]
+"@
+ 
+ $providersJson = $providers | ConvertFrom-Json
+ 
+ return ($providersJson | where {$_.provider -eq "$Provider"}).extension
+    
+}
+
+Function Send-EMail {
+    Param (
+        [Parameter(`
+            Mandatory=$true)]
+        [String]$EmailTo,
+        [Parameter(`
+            Mandatory=$true)]
+        [String]$Subject,
+        [Parameter(`
+            Mandatory=$true)]
+        [String]$Body,
+        [Parameter(`
+            Mandatory=$true)]
+        [String]$EmailFrom="myself@gmail.com",  #This gives a default value to the $EmailFrom command
+        [Parameter(`
+            mandatory=$true)]
+        [String]$SMTPServer,
+        [Parameter(`
+            mandatory=$true)]
+        [String]$SMTPServerPort,
+        [Parameter(`
+            mandatory=$true)]
+        [String]$Password
+    )
+
+        $SMTPMessage = New-Object System.Net.Mail.MailMessage($EmailFrom,$EmailTo,$Subject,$Body)
+        $SMTPClient = New-Object Net.Mail.SmtpClient($SmtpServer, $SMTPServerPort) 
+        $SMTPClient.EnableSsl = $true 
+        $SMTPClient.Credentials = New-Object System.Net.NetworkCredential($EmailFrom.Split("@")[0], $Password); 
+        $SMTPClient.Send($SMTPMessage)
+    
+}
+
 <#
     .DESCRIPTION
-        This commands sets your MFG configuration settings to your local machine. This include path to Trade Station, path to Strategy Quant, path to Strategy Quant workspace and endpoint used to get package updates
+        Run this to check if you are getting text messages. See Set-MFG-Configuration command to set your email account, smtp server, cell phone details etc.
+
+    .SYNOPSIS
+
+    .PARAMETER Subject
+        Message you want to text
+
+    .EXAMPLE
+        Test-SMS
+#>
+function Test-SMS($Subject)
+{
+    $config = Load-MFG-Config
+    $SMTPServer = "$($config.MFGConfig.SMTPServer)"
+    $SMTPServerPort = "$($config.MFGConfig.SMTPServerPort)"
+    $EmailAccount = "$($config.MFGConfig.EmailAccount)"
+    $EmailPassword = "$($config.MFGConfig.EmailPassword)"
+    $SMSProvider = "$($config.MFGConfig.SMSProvider)"
+    $CellPhoneNumber = "$($config.MFGConfig.CellPhoneNumber)"
+    $SMSProviderExtension = Get-ProviderExtension -Provider "$SMSProvider"
+
+    $EmailTo = "$($CellPhoneNumber)$($SMSProviderExtension)"
+
+    $Body = "$Subject"
+
+    if($Subject -eq $null)
+    {
+        $Subject = "Notification from MFG"
+        $Body = "Testing SMS functionality"
+    }
+            
+    Write-Host "Attempting to send SMS to $EmailTo from email account $EmailAccount using SMTP server $SMTPServer with port $SMTPServerPort . If these values do not look accurate, please use Set-MFG-Configuration" -ForegroundColor Cyan
+    
+    Send-EMail -EmailTo $EmailTo -Subject $Subject -Body $Body -EmailFrom $EmailAccount -SMTPServer $SMTPServer -SMTPServerPort $SMTPServerPort -Password $EmailPassword
+   
+}
+
+<#
+    .DESCRIPTION
+        This commands sets user settings. You can set your TradeStationDataPath, WorkflowResultsPath, SMTPServer, SMTPServerPort, EmailAccount, EmailPassword, Cell phone Provider, CellPhoneNumber with this command. 
+        You can also specify what all trading platforms you would like to test with following switches 
+            CheckNinjaTrader
+            CheckTradeStation
+            CheckTOS
+            CheckInternetConnection
+
 
     .SYNOPSIS
 
     .PARAMETER TradeStationDataPath
-        Set this to the folder location where you save Trade Station .csv files
+        This is the path where you save your Trade Station .csv files
 
     .PARAMETER SQPath
-        Set this to the folder location where StrategyQuant is installed
+        This is the path where you have installed Strategy Quant
 
     .PARAMETER WorkflowResultsPath
-        Set this to the folder location where you would like StrategyQuant to save databank results after each task is completed in the workflow
+        This is the path where .cfx files and databank results will be saved
 
     .PARAMETER UpgradeURL
-        This doesn't need to be changed unless asked. Mine -Upgrade command updates your powershell package based on this endpoint
+        endpoint to download latest scripts
+
+    .PARAMETER SMTPServer
+        This SMTP server will be used to send you text messaged. This is generally setup by your email account provider. Default is set to gmail
+
+    .PARAMETER SMTPServerPort
+        SMPT server port
+
+    .PARAMETER EmailAccount
+        This is your email account that will be used to send you text messages on your cell phone
+
+    .PARAMETER EmailPassword
+        This is password for your email account that will be used to communicate to your cell phone
+
+    .PARAMETER Provider
+        This is your cell phone provider
+
+    .PARAMETER CheckInternetConnection
+        This enables verification for internet connection
+
+    .PARAMETER CheckNinjaTrader
+        This enables verification for Ninja Trader
+    
+    .PARAMETER CheckTradeStation
+        This enables verification for Trade Station
+
+    .PARAMETER CheckTOS
+        This enables verification for Think or Swim
 
     .EXAMPLE
-        Set-MFG-Configuration -TradeStationDataPath "C:\TradeStation\Data" -SQPath "C:\StrategyQuantX" -WorkflowResultsPath "C:\Algos\SQ\MFG-Results"
+        Set-MFG-Configuration -SQPath "C:\StrategyQuantX" -TradeStationDataPath "C:\TradeStation\Data" -WorkflowResultsPath "C:\Algos\SQ\MFG-Results" -SMTPServer "smtp.gmail.com" -SMTPServerPort "587" -EmailAccount yourAccount@gmail.com -EmailPassword yourEmailPassword -CellPhoneNumber "YourCellPhoneNumber[No - No . No + No ()]" -Provider 'AT&T' -CheckNinjaTrader -CheckInternetConnection -CheckTradeStation -CheckTOS
+    
 #>
 function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     $TradeStationDataPath = "C:\Users\17703\Dropbox\MFG-DropBox\TradeStation\Data", 
     $WorkflowResultsPath = "C:\Algos\SQ\MFG-Results", 
-    $UpgradeURL = "http://151.106.59.178/MFG-Algos"
+    $UpgradeURL = "http://151.106.59.178/MFG-Algos",
+    $SMTPServer = "smtp.gmail.com" ,
+    $SMTPServerPort = "587",
+    $EmailAccount="YourEmailAccount@gmail.com",
+    $EmailPassword="123",
+    [ValidateSet("River Wireless","Alltel","AT&T","ACS Wireless","Blue Sky Frog","Bluegrass Cellular","Boost Mobile","BPL Mobile","Carolina West Wireless","Cellular One","Cellular South","Centennial Wireless","CenturyTel","Cingular","Clearnet","Comcast","Corr Wireless Communications","Dobson","Edge Wireless","Golden Telecom","Helio","Houston Cellular","Illinois Valley Cellular","Inland Cellular Telephone","Idea Cellular","MCI","Metrocall","Metrocall 2-way","Metro PCS","Microcell","Midwest Wireless","Mobilcomm","MTS","Nextel","OnlineBeep","Public Service Cellular","PCS One","Qwest","Rogers AT&T Wireless","Satellink","Southwestern Bell","Sprint","Sumcom","Surewest Communicaitons","Sumcom","Sprint","Surewest Communicaitons","T-Mobile","Tracfone","Triton","Unicel","US Cellular","US West","Virgin Mobile","Virgin Mobile Canada","Verizon","Western Wireless","West Central Wireless")]
+    [string]
+    $Provider = "AT&T",
+    $CellPhoneNumber = "",
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckInternetConnection,
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckNinjaTrader,
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckTradeStation,
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckTOS
     )
 {
     $json = Get-MFG-Configuration | Out-String | ConvertFrom-Json
@@ -83,6 +313,17 @@ function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     $json.MFGConfig.TSDataPath = "$TradeStationDataPath"
     $json.MFGConfig.WorkflowResultsPath = "$WorkflowResultsPath"
     $json.MFGConfig.UpgradeURL = "$UpgradeURL"
+    $json.MFGConfig.SMTPServer = "$SMTPServer"
+    $json.MFGConfig.SMTPServerPort = "$SMTPServerPort"
+    $json.MFGConfig.EmailAccount = "$EmailAccount"
+    $json.MFGConfig.EmailPassword = "$EmailPassword"
+    $json.MFGConfig.SMSProvider = "$Provider"
+    $json.MFGConfig.CellPhoneNumber = "$CellPhoneNumber"
+    $json.MFGConfig.CheckInternetConnection = "$CheckInternetConnection"
+    $json.MFGConfig.CheckNinjaTrader = "$CheckNinjaTrader"
+    $json.MFGConfig.CheckTradeStation = "$CheckTradeStation"
+    $json.MFGConfig.CheckTOS = "$CheckTOS"
+
     
     $json | ConvertTo-Json -depth 32| set-content "$($PSScriptRoot)\MFGConfig.json"
 
@@ -1114,6 +1355,9 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     .PARAMETER GetBacktestTimeframeFromTradeStationFile
         Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
 
+    .PARAMETER TradeStationFileTimeFrame
+        Use this parameter to specify the Trade Station file naming convention when you like to pull backtest timeframe from .csv file. See GetBacktestTimeframeFromTradeStationFile
+
     .EXAMPLE
         TD-MFG-InitializeWorkflow-M30 -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
 
@@ -1235,6 +1479,9 @@ function TD-MFG-InitializeWorkflow-M30
 
     .PARAMETER GetBacktestTimeframeFromTradeStationFile
         Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
+
+    .PARAMETER TradeStationFileTimeFrame
+        Use this parameter to specify the Trade Station file naming convention when you like to pull backtest timeframe from .csv file. See GetBacktestTimeframeFromTradeStationFile
 
     .EXAMPLE
         TD-MFG-InitializeWorkflow-D1 -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
@@ -1378,6 +1625,12 @@ function Get-BackTestTimeframeFromSQ($Symbol, $FullDurationStartDate)
     .PARAMETER GetBacktestTimeframeFromTradeStationFile
         Gets backtest start date from Trade Station Data folder (See Get-MFG-Configuration for details)
 
+    .PARAMETER UpdateUserSettings
+        This switch updates user settings in file MFGConfig.json to default
+
+    .PARAMETER TradeStationFileTimeFrame
+        Use this parameter to specify the Trade Station file naming convention when you like to pull backtest timeframe from .csv file. See GetBacktestTimeframeFromTradeStationFile
+
     .EXAMPLE
         TD-MFG-InitializeWorkflow -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile
 
@@ -1394,7 +1647,10 @@ function Get-BackTestTimeframeFromSQ($Symbol, $FullDurationStartDate)
         Mine -Upgrade
 
     .EXAMPLE
-        Mine -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile -BacktestTimeframe D1 -AlternateTimeframe H4
+        Mine -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame H1 -SymbolTimeframeConvention SQ
+
+    .EXAMPLE
+        Mine -InstrumentToMine "AAPL" -GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame H1
 #>
 function TD-MFG-InitializeWorkflow(
     [Parameter(ValueFromPipeline = $true)]
@@ -2090,7 +2346,16 @@ function Copy-Mined-Results-From-Incubation()
 
 }
 
+<#
+    .DESCRIPTION
+        Changes date format from dd.MM.yyyy HH:mm:ss to MM/dd/yyyy HH:mm for a CSV trade log exported from Quant Analyzer
 
+    .PARAMETER filePath
+        CSV file path
+    
+    .EXAMPLE
+        QA-Fix-Date-Format -filePath c:\QA\tradelogs.csv
+#>
 function QA-Fix-Date-Format($filePath)
 {
 
@@ -2133,10 +2398,95 @@ function QA-Fix-Date-Format($filePath)
 
 }
 
+<#
+    .DESCRIPTION
+        Checks following
+        Internet connection is working
+        Ninja Trader is running
+        Trade Station is running
+        Think or Swim is running
+        See Set-MFG-Configuration command to set what all tools you would like to validate. You can turn on/off checks for Ninja Trader, Trade Station and TOS
+
+    .PARAMETER NoAudio
+        Average If you don't want status in audio
+    
+    .EXAMPLE
+        Check-TradingPlatforms
+#>
+function Check-TradingPlatforms([Parameter(Mandatory=$false)]
+                    [Switch]$NoAudio)
+{
+    Add-Type -AssemblyName presentationCore
+    $mediaPlayer = New-Object system.windows.media.mediaplayer
+
+    $json = Load-MFG-Config
+
+    $issue = $null
+
+    $netCheck = Get-NetRoute | ? DestinationPrefix -eq '0.0.0.0/0' | Get-NetIPInterface | Where ConnectionState -eq 'Connected'
+
+    if(($($json.MFGConfig.CheckInternetConnection) -eq $true) -and $netCheck -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65334180.mp3")
+            $mediaPlayer.Play()
+        }
+
+        $issue = "Internet connection is down"
+    }
+    elseif(($($json.MFGConfig.CheckNinjaTrader) -eq $true) -and $(Get-Process -Name NinjaTrader -ea SilentlyContinue) -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65334185.mp3")
+            $mediaPlayer.Play()
+        }
+
+        $issue = "Ninja Trader is not working"
+    }
+    elseif(($($json.MFGConfig.CheckTradeStation) -eq $true) -and $(Get-Process -Name TradeStationAgentForms -ea SilentlyContinue) -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65334198.mp3")
+            $mediaPlayer.Play()
+        }
+
+        $issue = "Trade Station is not working"
+    }
+    elseif(($($json.MFGConfig.CheckTOS) -eq $true) -and $(Get-Process -Name thinkorswim -ea SilentlyContinue) -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65334189.mp3")
+            $mediaPlayer.Play()
+        }
+        $issue = "Think or Swim is not working"
+    }
+    else
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65334211.mp3")
+            $mediaPlayer.Play()
+        }
+
+        Write-Host "Trading platform looks good. Happy trading" -ForegroundColor Green
+
+    }
+
+    if($issue -ne $null)
+    {
+        Write-Warning "$issue"
+        Test-SMS -Subject "$issue"
+    }
+}
+
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
 New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *

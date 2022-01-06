@@ -1,8 +1,18 @@
 {
     "MFGConfig":  {
                       "SQPath":  "C:\\StrategyQuantX",
-                      "TSDataPath":  "C:\\Users\\Administrator\\Dropbox\\MFG-DropBox\\TradeStation\\Data",
+                      "TSDataPath":  "C:\\Users\\17703\\Dropbox\\MFG-DropBox\\TradeStation\\Data",
                       "WorkflowResultsPath":  "C:\\Algos\\SQ\\MFG-Results",
-                      "UpgradeURL":  "http://151.106.59.178/MFG-Algos"
+                      "UpgradeURL":  "http://151.106.59.178/MFG-Algos",
+                      "SMSProvider":  "AT\u0026T",
+                      "EmailAccount":  "yourEmail@gmail.com",
+                      "EmailPassword":  "YourEmailPassword",
+                      "CellPhoneNumber":  "YourCellPhoneNumber",
+                      "SMTPServer":  "smtp.gmail.com",
+                      "SMTPServerPort":  "587",
+                      "CheckInternetConnection":  "True",
+                      "CheckNinjaTrader":  "False",
+                      "CheckTOS":  "False",
+                      "CheckTradeStation":  "False"
                   }
 }
