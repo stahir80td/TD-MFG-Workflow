@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="MFG-Algos\65334180.mp3" />
+    <None Remove="MFG-Algos\65334185.mp3" />
+    <None Remove="MFG-Algos\65334189.mp3" />
+    <None Remove="MFG-Algos\65334198.mp3" />
+    <None Remove="MFG-Algos\65334211.mp3" />
+    <None Remove="MFG-Algos\65343124.mp3" />
+    <None Remove="MFG-Algos\65343126.mp3" />
     <None Remove="MFG-Algos\7-zip.chm" />
     <None Remove="MFG-Algos\7-zip.dll" />
     <None Remove="MFG-Algos\7-zip32.dll" />
@@ -20,6 +27,7 @@
     <None Remove="MFG-Algos\descript.ion" />
     <None Remove="MFG-Algos\Generate-Workflow-From-Collection.ps1" />
     <None Remove="MFG-Algos\History.txt" />
+    <None Remove="MFG-Algos\IncubationReview.xml" />
     <None Remove="MFG-Algos\Installation.ps1" />
     <None Remove="MFG-Algos\License.txt" />
     <None Remove="MFG-Algos\MFGAlgos.psm1" />
@@ -31,6 +39,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="MFG-Algos\65334180.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65334185.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65334189.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65334198.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65334211.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65343124.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\65343126.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="MFG-Algos\7-zip.chm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -65,6 +94,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MFG-Algos\Generate-Workflow-From-Collection.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MFG-Algos\IncubationReview.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="MFG-Algos\MFGAlgos.psm1">
