@@ -304,7 +304,11 @@ function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     [Parameter(Mandatory=$false)]
     [Switch]$CheckTradeStation,
     [Parameter(Mandatory=$false)]
-    [Switch]$CheckTOS
+    [Switch]$CheckTOS,
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckTWS,
+    [Parameter(Mandatory=$false)]
+    [Switch]$CheckMultiCharts
     )
 {
     $json = Get-MFG-Configuration | Out-String | ConvertFrom-Json
@@ -323,6 +327,8 @@ function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     $json.MFGConfig.CheckNinjaTrader = "$CheckNinjaTrader"
     $json.MFGConfig.CheckTradeStation = "$CheckTradeStation"
     $json.MFGConfig.CheckTOS = "$CheckTOS"
+    $json.MFGConfig.CheckTWS = "$CheckTWS"
+    $json.MFGConfig.CheckMulticharts = "$CheckMultiCharts"
 
     
     $json | ConvertTo-Json -depth 32| set-content "$($PSScriptRoot)\MFGConfig.json"
@@ -2463,6 +2469,24 @@ function Check-TradingPlatforms([Parameter(Mandatory=$false)]
             $mediaPlayer.Play()
         }
         $issue = "Think or Swim is not working"
+    }
+    elseif(($($json.MFGConfig.CheckTWS) -eq $true) -and $(Get-Process -Name tws -ea SilentlyContinue) -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65343124.mp3")
+            $mediaPlayer.Play()
+        }
+        $issue = "TWS is not working"
+    }
+    elseif(($($json.MFGConfig.CheckMulticharts) -eq $true) -and $(Get-Process -Name Multicharts* -ea SilentlyContinue) -eq $null)
+    {
+        if($NoAudio -eq $false)
+        {
+            $mediaPlayer.open("$($PSScriptRoot)\65343126.mp3")
+            $mediaPlayer.Play()
+        }
+        $issue = "MultiCharts is not working"
     }
     else
     {

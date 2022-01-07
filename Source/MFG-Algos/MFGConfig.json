@@ -13,6 +13,8 @@
                       "CheckInternetConnection":  "True",
                       "CheckNinjaTrader":  "False",
                       "CheckTOS":  "False",
-                      "CheckTradeStation":  "False"
+                      "CheckTradeStation":  "False",
+                      "CheckTWS":  "False",
+                      "CheckMulticharts":  "False"
                   }
 }
