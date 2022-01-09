@@ -2507,10 +2507,129 @@ function Check-TradingPlatforms([Parameter(Mandatory=$false)]
     }
 }
 
+<#
+    .DESCRIPTION
+        Uploads your strategies to Git. If you upload more than 10 strategies, it will download strategies uploaded by rest of the community
+        
+    .PARAMETER FolderPathForSQXFiles
+        Folder path where you keep your .sqx files for either incubation or live strategies
+
+    .PARAMETER Stage
+        Either Incubation or Live
+
+    .PARAMETER FirstName
+        Your First Name. Please specify a valid name. Your strategies are organized on Git by your name
+
+    .PARAMETER LastName
+        Your Last Name. Please specify a valid name. Your strategies are organized on Git by your name
+    
+    .EXAMPLE
+        Share-Strategies-With-Community -FolderPathForSQXFiles 'C:\Algos\SQ\MFG-Results\IncubationReview\In_Incubation' -Stage Incubation -FirstName Sohail -LastName Tahir
+#>
+function Share-Strategies-With-Community($FolderPathForSQXFiles, 
+[ValidateSet("Incubation","Live")]
+[string]
+$Stage = "Incubation", 
+$FirstName, $LastName)
+{
+
+    if([string]::IsNullOrEmpty($FolderPathForSQXFiles))
+    {
+        Write-Error "Please specify -FolderPathForSQXFiles parameter"
+        return
+    }
+
+    if([string]::IsNullOrEmpty($FirstName))
+    {
+        Write-Error "Please specify -FirstName parameter. Your strategies will be organized by your name"
+        return
+    }
+
+    if([string]::IsNullOrEmpty($LastName))
+    {
+        Write-Error "Please specify -LastName parameter. Your strategies will be organized by your name"
+        return
+    }
+
+    if(-Not (Test-Path "$FolderPathForSQXFiles"))
+    {
+        Write-Error "This is not a valid path $FolderPathForSQXFiles . Please try again with a correct Folder Path"
+        return
+    }
+
+
+    $accessToken = "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"
+
+    $files = Get-ChildItem -Path "$FolderPathForSQXFiles" -Recurse -Include *.sqx
+
+    [int]$strategyCount = 0
+
+    if($files -ne $null)
+    {
+        Write-Host "Total strategies found $($files.Count)" -ForegroundColor Green
+        
+        $strategyCount = [int] "$($files.Count)"
+
+        if($strategyCount -gt 100)
+        {
+            Write-Error "Sorry, you cannot upload more than 100 strategies. Please filter the strategies and then try again"
+            return
+        }
+
+        foreach($file in $files)
+        {
+            $Content1 = get-content "$($file.FullName)"
+            $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Content1)
+            $Encoded = [System.Convert]::ToBase64String($Bytes)
+            
+            $commitMessage = "MFG Commit"
+
+            $JSON = @{
+                "message" = "$($commitMessage)"
+                "content" = "$($Encoded)"
+    
+            } | ConvertTo-Json
+
+
+            try{
+                $response = Invoke-RestMethod -Uri "https://api.github.com/repos/stahir80td/TD-MFG-Strategies/contents/$($Stage)/$($FirstName)$($LastName)/$($file.Name)" -Method Put -Headers @{"Authorization" = "Bearer $accessToken"} -Body $json -Verbose
+            }
+            catch
+            {
+                if($_.ErrorDetails.Message -like "*sha*")
+                {
+                    Write-Host "$($file.FullName) has already been uploaded" -ForegroundColor Cyan
+                }
+                else
+                {
+                    Write-Error $_
+                }
+            }    
+        }
+    }
+
+    if($strategyCount -ge 10)
+    {
+        $fileName = "strategies-" + (Get-Date -UFormat "%Y-%m-%d_%I-%M-%S_%p").tostring() + ".zip"
+
+        Write-Host "Downloading strategies shared by community..." -ForegroundColor Green
+
+        $filePath = "$FolderPathForSQXFiles\" + $fileName
+        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/stahir80td/TD-MFG-Strategies/zipball/" -Method Get -Headers @{"Authorization" = "Bearer $accessToken"} -Verbose -OutFile "$filePath"
+
+        Write-Host "Strategies have been downloaded to this path: $filePath. As more strategies are uploaded by community, you should see more content in this zip file" -ForegroundColor Green
+    }
+    else
+    {
+        Write-Host "If you upload 10 or more strategies, you will get access to strategies uploaded by rest of the community" -ForegroundColor Green
+    }
+}
+
+
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
 New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *

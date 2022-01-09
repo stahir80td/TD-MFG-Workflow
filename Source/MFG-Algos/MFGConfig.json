@@ -1,7 +1,7 @@
 {
     "MFGConfig":  {
                       "SQPath":  "C:\\StrategyQuantX",
-                      "TSDataPath":  "C:\\Users\\17703\\Dropbox\\MFG-DropBox\\TradeStation\\Data",
+                      "TSDataPath":  "C:\\Users\\Administrator\\Dropbox\\MFG-DropBox\\TradeStation\\Data",
                       "WorkflowResultsPath":  "C:\\Algos\\SQ\\MFG-Results",
                       "UpgradeURL":  "http://151.106.59.178/MFG-Algos",
                       "SMSProvider":  "AT\u0026T",
