@@ -1272,7 +1272,8 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
-    $TradeStationFileTimeFrame = "H1"
+    $TradeStationFileTimeFrame = "H1",
+    $BuildAlgoFiltersXMLFilePath
     )
 
 {
@@ -1282,35 +1283,35 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H1 -AlternateTimeframe M30 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H4 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H2 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
 }
 
@@ -1427,7 +1428,8 @@ function TD-MFG-InitializeWorkflow-M30
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
-    $TradeStationFileTimeFrame = "H1"
+    $TradeStationFileTimeFrame = "H1",
+    $BuildAlgoFiltersXMLFilePath
     )
 
 {
@@ -1437,7 +1439,7 @@ function TD-MFG-InitializeWorkflow-M30
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
     
 
@@ -1554,7 +1556,8 @@ function TD-MFG-InitializeWorkflow-D1
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
-    $TradeStationFileTimeFrame = "H1"
+    $TradeStationFileTimeFrame = "H1",
+    $BuildAlgoFiltersXMLFilePath
     )
 
 {
@@ -1564,7 +1567,7 @@ function TD-MFG-InitializeWorkflow-D1
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine -BuildAlgoFiltersXMLFilePath "$BuildAlgoFiltersXMLFilePath"
 
 }
 
@@ -1719,7 +1722,8 @@ function TD-MFG-InitializeWorkflow(
     $TradeStationFileTimeFrame = "H1",
     [ValidateSet("Tradestation","MultiCharts")]
     [string]
-    $Engine = "Tradestation"
+    $Engine = "Tradestation",
+    $BuildAlgoFiltersXMLFilePath
     )
 {
     BEGIN {}
@@ -1813,6 +1817,11 @@ function TD-MFG-InitializeWorkflow(
 
             $newConfigFilePath = "$rootFolder\config.xml"
 
+            if(-NOT ([string]::IsNullOrEmpty($BuildAlgoFiltersXMLFilePath)))
+            {
+                Replace-BuildAlgoFilters -configFilePath "$newConfigFilePath" -buildAlgoFilterFilePath "$BuildAlgoFiltersXMLFilePath"
+            }
+
             Write-Host "Replacing placeholders..." -ForegroundColor Green
 
             (gc $newConfigFilePath).replace('[UL_Stock]', "$instrument").replace('[UC_Stock]', "$UnCorrelatedSymbol").replace('[Correlated_1]', "$Correlated_1").replace('[Correlated_2]', "$Correlated_2").replace('[Drawdown]', "$Drawdown").replace('[InitialCapital]', "$InitialCapital").replace('[MaxStrategies]', "$MaxStrategies") | Set-Content $newConfigFilePath -Force
@@ -1862,6 +1871,31 @@ function TD-MFG-InitializeWorkflow(
     END {}
 }
 
+function Replace-BuildAlgoFilters($configFilePath, $buildAlgoFilterFilePath)
+{
+    if(-NOT (Test-Path "$configFilePath"))
+    {
+        Write-Host "File not found $configFilePath. Default filters will be used for Build Algo task" -ForegroundColor Cyan
+        return
+    }
+    
+    if(-NOT (Test-Path "$buildAlgoFilterFilePath"))
+    {
+        Write-Host "File not found $buildAlgoFilterFilePath. Default filters will be used for Build Algo task" -ForegroundColor Cyan
+        return
+    }
+
+    $doc = New-Object System.Xml.XmlDocument
+    $doc.Load($configFilePath)
+    $buildAlgoTask = $doc.Project.Tasks.Task | where {$_.name -eq "Build strategies"}
+    Write-Host "Attempting to replace Build Algo task filters from file $buildAlgoFilterFilePath" -ForegroundColor Green
+    $buildAlgoTask.Settings.Rankings.Conditions.InnerXml = (gc "$buildAlgoFilterFilePath").Replace("<Conditions>","").Replace("</Conditions>","")
+
+    $doc.Save($configFilePath)
+
+    Write-Host "Build Algo task filters have been replaced" -ForegroundColor Green
+}
+
 function TD-MFG-Incubation-Workflow(
     [Parameter(ValueFromPipeline = $true)]
     [string[]]
@@ -1904,7 +1938,8 @@ function TD-MFG-Incubation-Workflow(
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [Parameter(Mandatory=$false)]
-    [Switch]$UpdateUserSettings
+    [Switch]$UpdateUserSettings,
+    $BuildAlgoFiltersXMLFilePath
     )
 {
     BEGIN {}
@@ -1996,6 +2031,11 @@ function TD-MFG-Incubation-Workflow(
 
             $newConfigFilePath = "$rootFolder\config.xml"
 
+            if(-NOT ([string]::IsNullOrEmpty($BuildAlgoFiltersXMLFilePath)))
+            {
+                Replace-BuildAlgoFilters -configFilePath "$newConfigFilePath" -buildAlgoFilterFilePath "$BuildAlgoFiltersXMLFilePath"
+            }
+            
             Write-Host "Replacing placeholders..." -ForegroundColor Green
 
             (gc $newConfigFilePath).replace('[UL_Stock]', "$instrument").replace('[UC_Stock]', "$UnCorrelatedSymbol").replace('[Correlated_1]', "$Correlated_1").replace('[Correlated_2]', "$Correlated_2").replace('[Drawdown]', "$Drawdown").replace('[InitialCapital]', "$InitialCapital").replace('[MaxStrategies]', "$MaxStrategies") | Set-Content $newConfigFilePath -Force

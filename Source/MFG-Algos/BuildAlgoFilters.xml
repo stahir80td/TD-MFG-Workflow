@@ -1,0 +1,65 @@
+﻿<Conditions>
+           <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="ProfitFactor" columnType="0" format="Decimal2" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="ProfitFactor" />
+              </Left-Side>
+              <Comparator value="&gt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="1.7" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="WinningPct" columnType="0" format="Decimal2Pct" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="WinningPct" />
+              </Left-Side>
+              <Comparator value="&gt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="35" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="AvgTradesPerYear" columnType="0" format="Decimal2" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="AvgTradesPerYear" />
+              </Left-Side>
+              <Comparator value="&gt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="[AvgTradesPerYear]" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="AvgTrade" columnType="0" format="Decimal2PL" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="AvgTrade" />
+              </Left-Side>
+              <Comparator value="&gt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="[AvgTrade]" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="UlcerPerformanceIndex" columnType="0" format="Decimal2" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="UlcerPerformanceIndex" />
+              </Left-Side>
+              <Comparator value="&gt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="1" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="Stability" columnType="0" format="Decimal2" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="Stability" />
+              </Left-Side>
+              <Comparator value="&gt;" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="0.7" />
+              </Right-Side>
+            </Condition>
+            <Condition use="true">
+              <Left-Side valueType="column">
+                <Column-Value column="Drawdown" columnType="0" format="Decimal2PL" resultType="main" direction="0" sampleType="127" plType="10" confidenceLevel="50" market="1" subresult="30" pctRatio="0" class="Drawdown" />
+              </Left-Side>
+              <Comparator value="&lt;=" />
+              <Right-Side valueType="numeric">
+                <Numeric-Value value="[Drawdown]" />
+              </Right-Side>
+            </Condition>
+ </Conditions>
