@@ -761,7 +761,7 @@ function TS-Get-Symbol-StartingDate($FullDurationStartDate, $Symbol, $BTF)
             $startingDate = "$((gc $file)[1].Split(",")[0])"
             
             $bits = $startingDate.Split("/")
-            return "$($bits[2]).$($bits[0]).$($bits[1])"
+            return "$($bits[2]).$($bits[0].PadLeft(2,'0')).$($bits[1].PadLeft(2,'0'))"
         }
     }
     
