@@ -198,7 +198,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_Start_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_Start_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -322,7 +322,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -19017,7 +19017,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[Recency_Start_Date]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[Recency_Start_Date]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -19126,7 +19126,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -19651,7 +19651,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -19760,7 +19760,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -20278,7 +20278,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -20323,7 +20323,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -20334,7 +20334,7 @@
                   </Commissions>
                   <MainTestValues timeframe="false" dates="true" precision="true" distance="true" spread="true" slippage="true" commissions="true" session="true" />
                 </Setup>
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -20345,7 +20345,7 @@
                   </Commissions>
                   <MainTestValues timeframe="true" dates="true" precision="true" distance="true" spread="true" slippage="true" commissions="true" session="true" />
                 </Setup>
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -20356,7 +20356,7 @@
                   </Commissions>
                   <MainTestValues timeframe="true" dates="true" precision="true" distance="true" spread="true" slippage="true" commissions="true" session="true" />
                 </Setup>
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -20894,7 +20894,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="None" use="false">
@@ -20942,7 +20942,7 @@
           <RetestOnAdditionalMarkets use="true">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="[UL_Stock]_[ATF]" timeframe="[AlternateTimeframe]" spread="0" />
                   <Commissions>
                     <Method type="None" use="false">
@@ -21483,7 +21483,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -21528,7 +21528,7 @@
           <RetestOnAdditionalMarkets use="true">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="[Correlated_1]_[CTF]" timeframe="[BacktestTimeframe]" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -21539,7 +21539,7 @@
                   </Commissions>
                   <MainTestValues timeframe="false" dates="true" precision="true" distance="true" spread="true" slippage="true" commissions="true" session="true" />
                 </Setup>
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="[Correlated_2]_[CTF]" timeframe="[BacktestTimeframe]" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">
@@ -22080,7 +22080,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="None" use="false">
@@ -22128,7 +22128,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="None" use="false">
@@ -22680,7 +22680,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="None" use="false">
@@ -22733,7 +22733,7 @@
           <RetestOnAdditionalMarkets use="true">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="[UC_Stock]_[UTF]" timeframe="[BacktestTimeframe]" spread="0" />
                   <Commissions>
                     <Method type="None" use="false">
@@ -23199,7 +23199,7 @@
         </RiskMoneyManagement>
         <Data>
           <Setups>
-            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+            <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
               <Chart symbol="[UL_Stock]_[TF]" timeframe="[BacktestTimeframe]" spread="0" />
               <Commissions>
                 <Method type="PerTrade" use="true">
@@ -23254,7 +23254,7 @@
           <RetestOnAdditionalMarkets use="false">
             <Settings>
               <Setups detailed="true">
-                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="Tradestation">
+                <Setup dateFrom="[IS_StartDate]" dateTo="[Recency_End_Date]" testPrecision="1" session="[NoSession]" slippage="5" minDist="0" engine="[Engine]">
                   <Chart symbol="@MES_D" timeframe="D1" spread="0" />
                   <Commissions>
                     <Method type="PerTrade" use="true">

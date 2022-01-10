@@ -1246,6 +1246,9 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     $MaxStrategies = "1500", 
     $FullDurationStartDate="2000.01.01", 
     $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation",
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
@@ -1279,28 +1282,35 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H1 -AlternateTimeframe M30 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H4 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
+
+    TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
+                               -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
+                               -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe H2 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
+                               -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
+                               -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
 }
 
@@ -1389,7 +1399,10 @@ function TD-MFG-InitializeWorkflow-M30
     $InitialCapital = "25000", 
     $Drawdown = "5000", 
     $MaxStrategies = "1500", 
-    $FullDurationStartDate="2000.01.01", 
+    $FullDurationStartDate="2000.01.01",
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation",
     $FullDurationEndDate= $(Get-Date),
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
@@ -1424,7 +1437,7 @@ function TD-MFG-InitializeWorkflow-M30
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
     
 
@@ -1515,6 +1528,9 @@ function TD-MFG-InitializeWorkflow-D1
     $Drawdown = "5000", 
     $MaxStrategies = "1500", 
     $FullDurationStartDate="2000.01.01", 
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation",
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
@@ -1548,7 +1564,7 @@ function TD-MFG-InitializeWorkflow-D1
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe D1 -AlternateTimeframe H4 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
                                -UnCorrelatedSymbolTimeframe $UnCorrelatedSymbolTimeframe -Session $Session -SymbolTimeframeConvention $SymbolTimeframeConvention `
                                -AverageTrade $AverageTrade -AverageTradesPerYear $AverageTradesPerYear -GetBacktestTimeframeFromSQ:$GetBacktestTimeframeFromSQ `
-                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame
+                               -GetBacktestTimeframeFromTradeStationFile:$GetBacktestTimeframeFromTradeStationFile -TradeStationFileTimeFrame $TradeStationFileTimeFrame -Engine $Engine
 
 }
 
@@ -1700,7 +1716,10 @@ function TD-MFG-InitializeWorkflow(
     [Switch]$UpdateUserSettings,
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
-    $TradeStationFileTimeFrame = "H1"
+    $TradeStationFileTimeFrame = "H1",
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation"
     )
 {
     BEGIN {}
@@ -1818,6 +1837,10 @@ function TD-MFG-InitializeWorkflow(
 
             (gc $newConfigFilePath).replace('[AvgTradesPerYear]', "$AverageTradesPerYear").replace('[AvgTrade]', "$AverageTrade") | Set-Content $newConfigFilePath -Force
 
+            Write-Host "Replacing Engine..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[Engine]', "$Engine") | Set-Content $newConfigFilePath -Force
+
             Write-Host "Packaging workflow..." -ForegroundColor Green
 
             $7zipPath = "$PSScriptRoot\7z.exe"
@@ -1853,6 +1876,9 @@ function TD-MFG-Incubation-Workflow(
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
     $BacktestTimeframe = "H1",
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation",
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
     $AlternateTimeframe = "M30",
@@ -1994,6 +2020,10 @@ function TD-MFG-Incubation-Workflow(
 
             (gc $newConfigFilePath).replace('[AvgTradesPerYear]', "$AverageTradesPerYear").replace('[AvgTrade]', "$AverageTrade") | Set-Content $newConfigFilePath -Force
 
+            Write-Host "Replacing Engine..." -ForegroundColor Green
+
+            (gc $newConfigFilePath).replace('[Engine]', "$Engine") | Set-Content $newConfigFilePath -Force
+
             Write-Host "Packaging workflow..." -ForegroundColor Green
 
             $7zipPath = "$PSScriptRoot\7z.exe"
@@ -2108,6 +2138,9 @@ function TD-MFG-Test-Workflow(
     $MaxStrategies = "1500", 
     $FullDurationStartDate="2000.01.01", 
     $FullDurationEndDate= $(Get-Date),
+    [ValidateSet("Tradestation","MultiCharts")]
+    [string]
+    $Engine = "Tradestation",
     [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
     [string]
     $BacktestTimeframe = "H1",
@@ -2201,6 +2234,10 @@ function TD-MFG-Test-Workflow(
         Write-Host "Replacing test duration..." -ForegroundColor Green
 
         (gc $newConfigFilePath).replace('[Test_Duration]', "$TestDurationInMinutes") | Set-Content $newConfigFilePath -Force
+
+        Write-Host "Replacing Engine..." -ForegroundColor Green
+
+        (gc $newConfigFilePath).replace('[Engine]', "$Engine") | Set-Content $newConfigFilePath -Force
 
         Write-Host "Packaging workflow..." -ForegroundColor Green
 
