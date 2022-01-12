@@ -30,6 +30,22 @@ function Get-MFG-Configuration()
 #>
 function Daily-Update()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $scheduleObject = New-Object -ComObject schedule.service
     $scheduleObject.connect()
     $rootFolder = $scheduleObject.GetFolder("\")
@@ -56,6 +72,22 @@ function Daily-Update()
 #>
 function TradingPlatform-Update()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $scheduleObject = New-Object -ComObject schedule.service
     $scheduleObject.connect()
     $rootFolder = $scheduleObject.GetFolder("\")
@@ -205,6 +237,22 @@ Function Send-EMail {
 #>
 function Test-SMS($Subject)
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $SMTPServer = "$($config.MFGConfig.SMTPServer)"
     $SMTPServerPort = "$($config.MFGConfig.SMTPServerPort)"
@@ -311,6 +359,24 @@ function Set-MFG-Configuration($SQPath = "C:\StrategyQuantX",
     [Switch]$CheckMultiCharts
     )
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $json = Get-MFG-Configuration | Out-String | ConvertFrom-Json
 
     $json.MFGConfig.SQPath = "$SQPath"
@@ -392,6 +458,23 @@ function Upgrade-Module([Parameter(Mandatory=$false)]
 #>
 function Restore-Databanks($Symbol="All")
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
 
     $config = Load-MFG-Config
     $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
@@ -454,6 +537,24 @@ function Restore-Databanks($Symbol="All")
 
 function SQ-Import-Projects($FolderWithCFXFiles = "C:\Algos\SQ\MFG-Results\SQProjects")
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $SQPath = "$($config.MFGConfig.SQPath)"
     
@@ -510,6 +611,24 @@ function SQ-Import-Projects($FolderWithCFXFiles = "C:\Algos\SQ\MFG-Results\SQPro
 #>
 function SQ-Export-Projects()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $SQPath = "$($config.MFGConfig.SQPath)"
     $rootPath = "$($config.MFGConfig.WorkflowResultsPath)"
@@ -594,6 +713,24 @@ function SQ-Export-Projects()
 #>
 function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $SQPath = "$($config.MFGConfig.SQPath)"
     $TSDataPath = "$($config.MFGConfig.TSDataPath)"
@@ -672,6 +809,24 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 #>
 function SQ-List-Symbols()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $SQPath = "$($config.MFGConfig.SQPath)"
 
@@ -717,6 +872,24 @@ function SQ-List-Symbols()
 #>
 function SQ-Generate-Workflow-Command($Symbol = "All")
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $found = $false
     $symbols = SQ-List-Symbols
 
@@ -999,6 +1172,24 @@ Exports SQ projects and saves them to .cfx files
 #>
 function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected="25000")
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $lines = $EasyLanguageScript.Split("`n")
     $UseMoneyManagement = $lines | where {$_ -like "*bool UseMoneyManagement(*"}
     $mmUseAccountBalance = $lines | where {$_ -like "*mmUseAccountBalance(*"}
@@ -1070,6 +1261,24 @@ function Validate-Strategy([string]$EasyLanguageScript, $InitialCapitalExpected=
 #>
 function Clear-Databanks()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $confirmation = Read-Host "Are you Sure You Want To Proceed? This will remove most of the SQ results. You should backup your results before using this command. Press Y to delete databanks"
     if ($confirmation -eq 'y') {
 
@@ -1278,6 +1487,24 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
 
 {
 
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
@@ -1434,6 +1661,24 @@ function TD-MFG-InitializeWorkflow-M30
 
 {
 
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
                                -FullDurationEndDate $FullDurationEndDate -BacktestTimeframe M30 -AlternateTimeframe H1 -CorrelatedSymbolTimeframe $CorrelatedSymbolTimeframe `
@@ -1561,6 +1806,24 @@ function TD-MFG-InitializeWorkflow-D1
     )
 
 {
+
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
 
     TD-MFG-InitializeWorkflow -InstrumentToMine $InstrumentToMine -Correlated_1 $Correlated_1 -Correlated_2 $Correlated_2 -InitialCapital $InitialCapital `
                                -Drawdown $Drawdown -MaxStrategies $MaxStrategies -FullDurationStartDate $FullDurationStartDate `
@@ -1726,7 +1989,25 @@ function TD-MFG-InitializeWorkflow(
     $BuildAlgoFiltersXMLFilePath
     )
 {
-    BEGIN {}
+    BEGIN {
+        #region LogParameters
+        $command = $MyInvocation.InvocationName
+        
+        $PSBoundParameters.GetEnumerator().ForEach({
+                $command += " -$($_.Key)" + " $($_.Value)"
+            })
+  
+        
+
+        try{
+            "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+        }
+        catch
+        {
+        
+        }
+        #endregion LogParameters
+    }
 	PROCESS
 	{
         $InSampleStartDate = ""
@@ -1942,7 +2223,27 @@ function TD-MFG-Incubation-Workflow(
     $BuildAlgoFiltersXMLFilePath
     )
 {
-    BEGIN {}
+    BEGIN {
+        
+        #region LogParameters
+        $command = $MyInvocation.InvocationName
+        
+        $PSBoundParameters.GetEnumerator().ForEach({
+                $command += " -$($_.Key)" + " $($_.Value)"
+            })
+  
+        
+
+        try{
+            "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+        }
+        catch
+        {
+        
+        }
+        #endregion LogParameters
+    
+    }
 	PROCESS
 	{
         $InSampleStartDate = ""
@@ -2193,7 +2494,27 @@ function TD-MFG-Test-Workflow(
     $AverageTrade = "95"
     )
 {
-    BEGIN {}
+    BEGIN {
+        
+        #region LogParameters
+        $command = $MyInvocation.InvocationName
+        
+        $PSBoundParameters.GetEnumerator().ForEach({
+                $command += " -$($_.Key)" + " $($_.Value)"
+            })
+  
+        
+
+        try{
+            "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+        }
+        catch
+        {
+        
+        }
+        #endregion LogParameters
+
+    }
 	PROCESS
 	{
         $InSampleStartDate = ""
@@ -2349,6 +2670,24 @@ function Create-IncubationWorkSpace()
 #>
 function Collect-Strategies-For-Incubation-Review()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
     $SQPath = "$($config.MFGConfig.SQPath)"
@@ -2405,6 +2744,24 @@ function Collect-Strategies-For-Incubation-Review()
 
 function Copy-Mined-Results-From-Incubation()
 {
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
     $config = Load-MFG-Config
     $workflowResultsFolder = "$($config.MFGConfig.WorkflowResultsPath)"
     $SQPath = "$($config.MFGConfig.SQPath)"
@@ -2441,6 +2798,24 @@ function Copy-Mined-Results-From-Incubation()
 #>
 function QA-Fix-Date-Format($filePath)
 {
+
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
 
     $p = import-csv "$filePath"
 
@@ -2499,6 +2874,25 @@ function QA-Fix-Date-Format($filePath)
 function Check-TradingPlatforms([Parameter(Mandatory=$false)]
                     [Switch]$NoAudio)
 {
+    
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+    
     Add-Type -AssemblyName presentationCore
     $mediaPlayer = New-Object system.windows.media.mediaplayer
 
@@ -2609,6 +3003,24 @@ function Share-Strategies-With-Community($FolderPathForSQXFiles,
 $Stage = "Incubation", 
 $FirstName, $LastName)
 {
+
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
 
     if([string]::IsNullOrEmpty($FolderPathForSQXFiles))
     {
