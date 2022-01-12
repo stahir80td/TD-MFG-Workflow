@@ -857,7 +857,7 @@ function SQ-Delete-Symbol($Symbol)
     }
     
     $Command = "$SQPath\sqcli.exe"
-    $Parms = "-symbol action=delete symbols=$($CommaSeparatedListOfSymbolsNoSpaces)"
+    $Parms = "-symbol action=delete symbols=$($Symbol)"
     $Parms | Add-Content -Path "$commandFile"
 
     Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
@@ -3209,4 +3209,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function SQ-Delete-Symbol,Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function SQ-Delete-Symbols,Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
