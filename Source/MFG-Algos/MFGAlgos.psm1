@@ -800,6 +800,94 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 
 <#
     .DESCRIPTION
+        Deletes a symbol from SQ. Make sure SQ UI is not running
+
+    .SYNOPSIS
+
+    .PARAMETER Symbol
+        Provide name of symbol to delete from SQ
+
+    .EXAMPLE
+        SQ-Delete-Symbol -Symbol "AAPL_1H"
+            
+#>
+function SQ-Delete-Symbol($Symbol)
+{
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    
+
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
+    if([string]::IsNullOrEmpty($Symbol))
+    {
+        Write-Error "Please provide -Symbol name"
+        return
+    }
+
+    $config = Load-MFG-Config
+    $SQPath = "$($config.MFGConfig.SQPath)"
+    
+    if(-NOT (Test-Path $SQPath))
+    {
+        Write-Error "Your Strategy Quant path $SQPath is not valid. Please run this command Set-MFG-Configuration to adjust the path"
+    }
+
+    $commandFile = "$PSScriptRoot\DeleteSymbols.txt"
+
+    if(Test-Path "$commandFile")
+    {
+        Clear-Content "$commandFile"
+    }
+    else
+    {
+        New-Item "$commandFile"
+    }
+    
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-symbol action=delete symbols=$($CommaSeparatedListOfSymbolsNoSpaces)"
+    $Parms | Add-Content -Path "$commandFile"
+
+    Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
+
+    $(gc "$commandFile") | Write-Host -ForegroundColor Green
+    
+    Write-Host "`nRunning SQ CLI... `n" -ForegroundColor Cyan
+
+    $Command = "$SQPath\sqcli.exe"
+    $Parms = "-run file=""$($commandFile)"
+    $Prms = $Parms.Split(" ")
+    $response = & "$Command" $Prms
+        
+    $anotherInstance = $response.Where({$_ -like "*It seems another instance of StrategyQuant X is running*"})
+    if(-not ([string]::IsNullOrEmpty($anotherInstance)))
+    {
+        Write-Error "$($anotherInstance) You might want to close SQ UI and then run this command again."
+        return
+    }
+    else
+    {
+        $response
+    }
+
+    Write-Host "Completed" -ForegroundColor Green
+   
+}
+
+<#
+    .DESCRIPTION
         This commands prints all symbols available in StrategyQuant. You might want to close SQ UI to run this
 
     .SYNOPSIS
@@ -3121,4 +3209,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function SQ-Delete-Symbols,Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
