@@ -1,4 +1,4 @@
-<Project name="MFG - Stocks [UL_Stock] - [BacktestTimeframe]" version="135.867">
+<Project name="MFG - Stocks [UL_Stock] - [BacktestTimeframe][Guid]" version="135.867">
   <Tasks>
     <Task name="Clear databanks" type="ClearDatabanks" active="true">
       <Settings>
