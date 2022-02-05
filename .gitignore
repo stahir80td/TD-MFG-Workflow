@@ -362,3 +362,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Source/MFG-Algos/History.txt
+/Source/MFG-Algos/ImportSymbols.txt

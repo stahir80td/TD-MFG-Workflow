@@ -432,7 +432,7 @@ function Upgrade-Module([Parameter(Mandatory=$false)]
         else
         {
             $fileUrl  = '{0}/{1}' -f $url.TrimEnd('/'), $_
-            if((-NOT ($fileUrl -like "*web.config*")) -and (-NOT ($fileUrl -like "*History.txt*"))){
+            if((-NOT ($fileUrl -like "*web.config*")) -and (-NOT ($fileUrl -like "*History.txt*") -and (-NOT ($fileUrl -like "*Earnings.txt*")) )){
                 $ProgressPreference = 'SilentlyContinue'
                 Invoke-WebRequest -Uri $fileUrl -OutFile $filePath
             }
@@ -758,6 +758,8 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
     
     $files = Get-ChildItem "$TSDataPath" -Recurse -Include *.csv
 
+    $commands = @()
+
     foreach($file in $files)
     {
         $fileSymbol = $($file.Name.Split("_")[0])
@@ -768,8 +770,13 @@ function SQ-Import-Symbols($Symbol="All", $Instrument = "Standard stock")
 
             $Command = "$SQPath\sqcli.exe"
             $Parms = "-data action=import bartype=endofbar symbol=$($file.Name.Split(".")[0]) instrument=""$($Instrument)"" filepath=""$($file.FullName)"" timezone=""EETUS"""
-            $Parms | Add-Content -Path "$commandFile"
+            $commands += $Parms
         }
+    }
+
+    if($commands.Length -gt 0)
+    {
+        $commands | Add-Content -Path "$commandFile"
     }
 
     Write-Host "`nFollowing commands will be run with SQ CLI `n" -ForegroundColor Cyan
@@ -3217,6 +3224,167 @@ $FirstName, $LastName)
     }
 }
 
+function Get-EarningsDate($Symbol)
+{
+    $ProgressPreference = 'SilentlyContinue'
+    $response = Invoke-WebRequest -Uri "https://finance.yahoo.com/calendar/earnings?symbol=$($Symbol)"
+    $split = "aria-label=""Earnings Date""><span>"
+    
+    $dateStart = ($response.Content -split $split)[1]
+    $earningDate = ($dateStart -split "</span")[0]
+    #$earningDate
+    [datetime] $dt = $earningDate
+
+    $dateStartPrevious = ($response.Content -split $split)[2]
+    $earningDatePrevious = ($dateStartPrevious -split "</span")[0]
+    [datetime] $dtPrevious = $earningDatePrevious
+
+    $ts = New-TimeSpan -Start $(Get-Date) -End $dtPrevious
+    [int]$days = $ts.Days
+
+    if($days -gt 0)
+    {
+        return $dtPrevious
+    }
+
+    return $dt
+}
+
+
+function Set-WindowsTaskForEarnings()
+{
+    #region LogParameters
+    $command = $MyInvocation.InvocationName
+        
+    $PSBoundParameters.GetEnumerator().ForEach({
+            $command += " -$($_.Key)" + " $($_.Value)"
+        })
+  
+    try{
+        "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+    }
+    catch
+    {
+        
+    }
+    #endregion LogParameters
+
+    $scheduleObject = New-Object -ComObject schedule.service
+    $scheduleObject.connect()
+    $rootFolder = $scheduleObject.GetFolder("\")
+    try{$rootFolder.CreateFolder("MFG") } catch{}
+
+    ipmo ScheduledTasks
+
+    $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-WindowStyle Hidden Check-Earnings"
+
+    $time = Get-Random -Minimum 1 -Maximum 11
+
+    $trigger = New-ScheduledTaskTrigger -Daily -At "9am"
+
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CheckEarnings" -Description "Check Earnings" -User "System" -Verbose -TaskPath '\MFG\' | Start-ScheduledTask
+}
+
+function Set-EarningsAlert(
+    [Parameter(ValueFromPipeline = $true)]
+    [string[]]
+    $Symbol
+)
+{
+
+    BEGIN {
+        #region LogParameters
+        $command = $MyInvocation.InvocationName
+        
+        $PSBoundParameters.GetEnumerator().ForEach({
+                $command += " -$($_.Key)" + " $($_.Value)"
+            })
+  
+        try{
+            "$(Get-Date -Format "MM/dd/yyyy HH:mm") $command" | Add-Content "$PSScriptRoot\History.txt"
+        }
+        catch
+        {
+                    
+        }
+        #endregion LogParameters
+    }
+	PROCESS
+	{
+            $commandFile = "$PSScriptRoot\Earnings.txt"
+            $fileContent = ""
+
+            if(Test-Path "$commandFile")
+            {
+                $fileContent = gc "$commandFile"
+            }
+            else
+            {
+                New-Item "$commandFile"
+            }
+
+            if($fileContent -eq "")
+            {
+                $fileContent = $Symbol
+            }
+            else
+            {
+                $fileContent += ",$($Symbol)"
+            }
+    }
+    END {
+        Set-Content -Path "$PSScriptRoot\Earnings.txt" -Value "$fileContent"
+        Set-WindowsTaskForEarnings
+    }
+    
+}
+
+function Check-Earnings()
+{
+    $commandFile = "$PSScriptRoot\Earnings.txt"
+    $fileContent = ""
+
+    if(Test-Path "$commandFile")
+    {
+        $fileContent = gc "$commandFile"
+    }
+    else
+    {
+        return
+    }
+
+    $symbols = $fileContent -split ","
+
+    foreach($symbol in $symbols)
+    {
+        try{
+            $dt = Get-EarningsDate -Symbol $symbol
+            
+            if($dt -ne $null)
+            {
+                $ts = New-TimeSpan -Start $(Get-Date) -End $dt
+                [int]$days = $ts.Days
+
+                if($days -gt 0 -and $days -le 7)
+                {
+                    $message = "$symbol earning is in $days days. Expected ER: $dt"
+                    Write-Warning $message
+                    Test-SMS -Subject "$message"
+                }
+                else
+                {
+                    Write-Host "$symbol earning is in $days days. Expected ER: $dt"
+                }
+            }
+
+        }
+        catch
+        {
+        
+        }
+    }
+
+}
 
 New-Alias -Name Mine -Value TD-MFG-InitializeWorkflow
 New-Alias -Name Mine-M30 -Value TD-MFG-InitializeWorkflow-M30
@@ -3224,4 +3392,4 @@ New-Alias -Name Mine-D1 -Value TD-MFG-InitializeWorkflow-D1
 
 New-Alias -Name Mine-Common TD-MFG-InitializeWorkflow-CommonTimeframes
 
-Export-ModuleMember -Function SQ-Delete-Symbol,Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
+Export-ModuleMember -Function Set-EarningsAlert,Check-Earnings,Get-EarningsDate,SQ-Delete-Symbol,Share-Strategies-With-Community,Test-SMS,Get-ProviderExtension,TradingPlatform-Update,Check-TradingPlatforms,QA-Fix-Date-Format,Copy-Mined-Results-From-Incubation,Collect-Strategies-For-Incubation-Review,TD-MFG-Incubation-Workflow,Validate-Strategy,SQ-Export-Projects,SQ-Import-Symbols,Daily-Update,TD-MFG-Test-Workflow,Clear-Databanks,Get-MFG-Configuration,Set-MFG-Configuration,TD-MFG-InitializeWorkflow,Restore-Databanks,TD-MFG-InitializeWorkflow-M30,TD-MFG-InitializeWorkflow-D1,TD-MFG-InitializeWorkflow-CommonTimeframes,SQ-List-Symbols,SQ-Generate-Workflow-Command -Alias *
