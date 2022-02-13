@@ -3227,7 +3227,7 @@ $FirstName, $LastName)
 function Get-EarningsDate($Symbol)
 {
     $ProgressPreference = 'SilentlyContinue'
-    $response = Invoke-WebRequest -Uri "https://finance.yahoo.com/calendar/earnings?symbol=$($Symbol)"
+    $response = Invoke-WebRequest -Uri "https://finance.yahoo.com/calendar/earnings?symbol=$($Symbol)" -UseBasicParsing
     $split = "aria-label=""Earnings Date""><span>"
     
     $dateStart = ($response.Content -split $split)[1]
