@@ -274,7 +274,12 @@ function Test-SMS($Subject)
             
     Write-Host "Attempting to send SMS to $EmailTo from email account $EmailAccount using SMTP server $SMTPServer with port $SMTPServerPort . If these values do not look accurate, please use Set-MFG-Configuration" -ForegroundColor Cyan
     
+    try{
     Send-EMail -EmailTo $EmailTo -Subject $Subject -Body $Body -EmailFrom $EmailAccount -SMTPServer $SMTPServer -SMTPServerPort $SMTPServerPort -Password $EmailPassword
+    }
+    catch{}
+
+    Send-EMail -EmailTo $EmailAccount -Subject $Subject -Body $Body -EmailFrom $EmailAccount -SMTPServer $SMTPServer -SMTPServerPort $SMTPServerPort -Password $EmailPassword
    
 }
 
