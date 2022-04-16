@@ -1558,10 +1558,10 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     [ValidateSet("Tradestation","MultiCharts")]
     [string]
     $Engine = "Tradestation",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $UnCorrelatedSymbolTimeframe = "M30",
     $Session = "No Session",
@@ -1579,7 +1579,7 @@ function TD-MFG-InitializeWorkflow-CommonTimeframes
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $TradeStationFileTimeFrame = "H1",
     $BuildAlgoFiltersXMLFilePath,
@@ -1734,10 +1734,10 @@ function TD-MFG-InitializeWorkflow-M30
     [string]
     $Engine = "Tradestation",
     $FullDurationEndDate= $(Get-Date),
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $UnCorrelatedSymbolTimeframe = "M30",
     $Session = "No Session",
@@ -1755,7 +1755,7 @@ function TD-MFG-InitializeWorkflow-M30
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $TradeStationFileTimeFrame = "H1",
     $BuildAlgoFiltersXMLFilePath,
@@ -1882,10 +1882,10 @@ function TD-MFG-InitializeWorkflow-D1
     [ValidateSet("Tradestation","MultiCharts")]
     [string]
     $Engine = "Tradestation",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $UnCorrelatedSymbolTimeframe = "M30",
     $Session = "No Session",
@@ -1903,7 +1903,7 @@ function TD-MFG-InitializeWorkflow-D1
     [Switch]$GetBacktestTimeframeFromSQ,
     [Parameter(Mandatory=$false)]
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $TradeStationFileTimeFrame = "H1",
     $BuildAlgoFiltersXMLFilePath,
@@ -2057,16 +2057,16 @@ function TD-MFG-InitializeWorkflow(
     $MaxStrategies = "1500", 
     $FullDurationStartDate="2000.01.01", 
     $FullDurationEndDate= $(Get-Date),
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $BacktestTimeframe = "H1",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $AlternateTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $UnCorrelatedSymbolTimeframe = "M30",
     $Session = "No Session",
@@ -2086,7 +2086,7 @@ function TD-MFG-InitializeWorkflow(
     [Switch]$GetBacktestTimeframeFromTradeStationFile,
     [Parameter(Mandatory=$false)]
     [Switch]$UpdateUserSettings,
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $TradeStationFileTimeFrame = "H1",
     [ValidateSet("Tradestation","MultiCharts")]
@@ -2303,19 +2303,19 @@ function TD-MFG-Incubation-Workflow(
     $MaxStrategies = "1500", 
     $FullDurationStartDate="2000.01.01", 
     $FullDurationEndDate= $(Get-Date),
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $BacktestTimeframe = "H1",
     [ValidateSet("Tradestation","MultiCharts")]
     [string]
     $Engine = "Tradestation",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $AlternateTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $CorrelatedSymbolTimeframe = "M30",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $UnCorrelatedSymbolTimeframe = "M30",
     $Session = "No Session",
@@ -2597,10 +2597,10 @@ function TD-MFG-Test-Workflow(
     [ValidateSet("Tradestation","MultiCharts")]
     [string]
     $Engine = "Tradestation",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     [string]
     $BacktestTimeframe = "H1",
-    [ValidateSet("M1","M5","M15","M30", "H1", "H2", "H4", "D1")]
+    [ValidateSet("M1","M5","M15","M26","M30","M39","M65","M130","M195", "H1", "H2", "H4", "D1")]
     $Session = "No Session",
     [ValidateSet("SQ", "MFG")]
     [string]
